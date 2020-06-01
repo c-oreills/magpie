@@ -60,6 +60,15 @@ var store = {
   ],
 };
 
+var hand = [
+  { name: "Item", colour: "green", energy: 1 },
+  { name: "Item", colour: "red", energy: 2 },
+  { name: "Item", colour: "cornflowerblue", energy: 4 },
+  { name: "Item", colour: "green", energy: 1 },
+  { name: "Item", colour: "red", energy: 2 },
+  { name: "Item", colour: "cornflowerblue", energy: 4 },
+];
+
 function Item({ name, colour, energy }) {
   return (
     <div className={styles.item} style={{ backgroundColor: colour }}>
@@ -102,29 +111,23 @@ function Set({ items, charges, enhancers }) {
   ));
   return (
     <div className={`${styles.set} ${isComplete ? styles.complete : ""}`}>
-      <div className={styles.setInner}>
-        {itemEls}
-        <Charges charges={charges} numItems={items.length} />
-        {enhancerEls}
-      </div>
+      {itemEls}
+      <Charges charges={charges} numItems={items.length} />
+      {enhancerEls}
     </div>
   );
 }
 
 function StoreItem({ energy }) {
-  return (
-    <div className={styles.energy}>{energy}</div>
-  );
+  return <div className={styles.energy}>{energy}</div>;
 }
 
 function Store({ items }) {
   let storeEls = items.map((i) => <StoreItem energy={i.energy} />);
   return (
     <div className={styles.store}>
-      <div className={styles.storeInner}>
-        <div className={styles.storeHeader}>Store</div>
-        {storeEls}
-      </div>
+      <div className={styles.storeHeader}>Store</div>
+      {storeEls}
     </div>
   );
 }
@@ -155,4 +158,11 @@ export function Board() {
   boardEls.push(<Store items={store.items} />);
 
   return <div className={styles.board}>{boardEls}</div>;
+}
+
+export function Hand() {
+  let handEls = hand.map((i) => (
+    <Item name={i.name} colour={i.colour} energy={i.energy} />
+  ));
+  return <div className={styles.hand}>{handEls}</div>;
 }

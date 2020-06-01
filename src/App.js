@@ -1,7 +1,6 @@
 import React from 'react';
-import { Board } from './features/board/Board';
+import { Board, Hand } from './features/board/Board';
 import { ActionBar, SelectorBar } from './features/controls/Controls';
-import { Hand } from './features/hand/Hand';
 import './App.css';
 
 function App() {
@@ -9,6 +8,8 @@ function App() {
     <div className="app">
       <SelectorBar />
       <Board />
+      <hr />
+      <Hand />
       <ActionBar />
     </div>
   );
