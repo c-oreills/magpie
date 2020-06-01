@@ -15,15 +15,12 @@
 .item .energy {
   float: right;
   border: none;
-  border-left: 1px solid black;
+  border-left: 1px solid grey;
 }
 
 .charges {
   display: flex;
   justify-content: space-around;
-}
-
-.charge {
   color: grey;
 }
 
@@ -70,7 +67,7 @@
 }
 
 .store .energy {
-  border: 1px solid black;
+  border: 1px solid grey;
   /* Negative margin allows borders to merge together */
   margin: -0.5px;
 }
