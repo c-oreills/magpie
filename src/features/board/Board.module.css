@@ -1,0 +1,75 @@
+.item {
+  padding-left: 0.5em;
+}
+
+.energy {
+  width: 1.5em;
+  text-align: center;
+  background-color: white;
+}
+
+.item .energy {
+  float: right;
+  border-left: 1px solid black;
+}
+
+.store .energy {
+  border: 1px solid black;
+}
+
+.charges {
+  display: flex;
+  justify-content: space-around;
+}
+
+.charge {
+  color: grey;
+}
+
+.charge.active {
+  font-weight: bold;
+  color: black;
+}
+
+.set, .store {
+  min-width: 30%;
+  margin: 0.3em 0.3em;
+}
+
+.setInner, .storeInner {
+  border: 4px solid white;
+}
+
+.set.complete .setInner {
+  border-color: lime;
+}
+
+.setInner div {
+  border: 1px solid;
+}
+
+.setInner div:not(:last-child) {
+  border-bottom: none;
+}
+
+.storeInner {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.storeHeader {
+  font-weight: bold;
+}
+
+.storeItem {
+  display: inline-block;
+  flex: 1.5em;
+}
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.5em 0;
+  background-color: white;
+}
