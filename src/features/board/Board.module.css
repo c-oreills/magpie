@@ -1,5 +1,9 @@
 .item {
   padding-left: 0.5em;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .energy {
@@ -10,11 +14,8 @@
 
 .item .energy {
   float: right;
+  border: none;
   border-left: 1px solid black;
-}
-
-.store .energy {
-  border: 1px solid black;
 }
 
 .charges {
@@ -32,8 +33,14 @@
 }
 
 .set, .store {
-  min-width: 30%;
+  width: 7em;
   margin: 0.3em 0.3em;
+}
+
+@media (max-width: 576px) {
+  .set, .store {
+    width: 30%;
+  }
 }
 
 .setInner, .storeInner {
@@ -58,12 +65,14 @@
 }
 
 .storeHeader {
+  width: 100%;
   font-weight: bold;
 }
 
-.storeItem {
-  display: inline-block;
-  flex: 1.5em;
+.store .energy {
+  border: 1px solid black;
+  /* Negative margin allows borders to merge together */
+  margin: -0.5px;
 }
 
 .board {

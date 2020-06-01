@@ -63,8 +63,8 @@ var store = {
 function Item({ name, colour, energy }) {
   return (
     <div className={styles.item} style={{ backgroundColor: colour }}>
+      <div className={styles.energy}>{energy}</div>
       {name}
-      <span className={styles.energy}>{energy}</span>
     </div>
   );
 }
@@ -113,9 +113,7 @@ function Set({ items, charges, enhancers }) {
 
 function StoreItem({ energy }) {
   return (
-    <div className={styles.storeItem}>
-      <div className={styles.energy}>{energy}</div>
-    </div>
+    <div className={styles.energy}>{energy}</div>
   );
 }
 
