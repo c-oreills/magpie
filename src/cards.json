@@ -1,0 +1,225 @@
+{
+  "sets": [{
+    "id": "s_a",
+    "charges": [1, 2],
+    "energy": 1,
+    "enhanceable": true
+  }, {
+    "id": "s_b",
+    "charges": [1, 2, 3],
+    "energy": 1,
+    "enhanceable": true
+  }, {
+    "id": "s_c",
+    "charges": [1, 2, 4],
+    "energy": 2,
+    "enhanceable": true
+  }, {
+    "id": "s_d",
+    "charges": [1, 3, 5],
+    "energy": 2,
+    "enhanceable": true
+  }, {
+    "id": "s_e",
+    "charges": [2, 3, 6],
+    "energy": 3,
+    "enhanceable": true
+  }, {
+    "id": "s_f",
+    "charges": [2, 4, 6],
+    "energy": 3,
+    "enhanceable": true
+  }, {
+    "id": "s_g",
+    "charges": [2, 4, 7],
+    "energy": 4,
+    "enhanceable": true
+  }, {
+    "id": "s_h",
+    "charges": [3, 8],
+    "energy": 4,
+    "enhanceable": true
+  }, {
+    "id": "s_y",
+    "charges": [1, 2],
+    "energy": 2,
+    "enhanceable": false
+  }, {
+    "id": "s_z",
+    "charges": [1, 2, 3, 4],
+    "energy": 2,
+    "enhanceable": false
+  }],
+  "cards": [
+    {
+      "id": "c_wab",
+      "type": "wild",
+      "count": 1,
+      "energy": 1,
+      "sets": ["s_a", "s_b"]
+    }, {
+      "id": "c_wcd",
+      "type": "wild",
+      "count": 2,
+      "energy": 2,
+      "sets": ["s_c", "s_d"]
+    }, {
+      "id": "c_wef",
+      "type": "wild",
+      "count": 2,
+      "energy": 3,
+      "sets": ["s_e", "s_f"]
+    }, {
+      "id": "c_wgh",
+      "type": "wild",
+      "count": 1,
+      "energy": 4,
+      "sets": ["s_g", "s_h"]
+    }, {
+      "id": "c_wgz",
+      "type": "wild",
+      "count": 1,
+      "energy": 4,
+      "sets": ["s_g", "s_z"]
+    }, {
+      "id": "c_wbz",
+      "type": "wild",
+      "count": 1,
+      "energy": 4,
+      "sets": ["s_b", "s_z"]
+    }, {
+      "id": "c_wyz",
+      "type": "wild",
+      "count": 1,
+      "energy": 2,
+      "sets": ["s_y", "s_z"]
+    }, {
+      "id": "c_wsuper",
+      "type": "wild",
+      "count": 2,
+      "energy": 0,
+      "sets": ["s_a", "s_b", "s_c", "s_d", "s_e", "s_f", "s_g", "s_h", "s_y", "s_z"]
+    }, {
+      "id": "c_cab",
+      "type": "charge",
+      "count": 2,
+      "energy": 1,
+      "sets": ["s_a", "s_b"]
+    }, {
+      "id": "c_ccd",
+      "type": "charge",
+      "count": 2,
+      "energy": 1,
+      "sets": ["s_c", "s_d"]
+    }, {
+      "id": "c_cef",
+      "type": "charge",
+      "count": 2,
+      "energy": 1,
+      "sets": ["s_e", "s_f"]
+    }, {
+      "id": "c_cgh",
+      "type": "charge",
+      "count": 2,
+      "energy": 1,
+      "sets": ["s_g", "s_h"]
+    }, {
+      "id": "c_cyz",
+      "type": "charge",
+      "count": 2,
+      "energy": 1,
+      "sets": ["s_y", "s_z"]
+    }, {
+      "id": "c_csuper",
+      "type": "charge",
+      "count": 3,
+      "energy": 3,
+      "sets": ["s_a", "s_b", "s_c", "s_d", "s_e", "s_f", "s_g", "s_h", "s_y", "s_z"]
+    }, {
+      "id": "c_e1",
+      "type": "energy",
+      "count": 6,
+      "energy": 1
+    }, {
+      "id": "c_e2",
+      "type": "energy",
+      "count": 5,
+      "energy": 2
+    }, {
+      "id": "c_e3",
+      "type": "energy",
+      "count": 3,
+      "energy": 3
+    }, {
+      "id": "c_e4",
+      "type": "energy",
+      "count": 3,
+      "energy": 4
+    }, {
+      "id": "c_e5",
+      "type": "energy",
+      "count": 2,
+      "energy": 5
+    }, {
+      "id": "c_e10",
+      "type": "energy",
+      "count": 1,
+      "energy": 10
+    }, {
+      "id": "c_e10",
+      "type": "energy",
+      "count": 1,
+      "energy": 10
+    }, {
+      "id": "c_ass",
+      "type": "steal_set",
+      "count": 2,
+      "energy": 5
+    }, {
+      "id": "c_asm",
+      "type": "steal_member",
+      "count": 3,
+      "energy": 3
+    }, {
+      "id": "c_as",
+      "type": "swap",
+      "count": 3,
+      "energy": 3
+    }, {
+      "id": "c_adc",
+      "type": "double_charge",
+      "count": 2,
+      "energy": 1
+    }, {
+      "id": "c_acs",
+      "type": "charge_single",
+      "count": 3,
+      "energy": 3
+    }, {
+      "id": "c_aca",
+      "type": "charge_all",
+      "count": 3,
+      "energy": 2
+    }, {
+      "id": "c_an",
+      "type": "negate",
+      "count": 3,
+      "energy": 4
+    }, {
+      "id": "c_ad",
+      "type": "draw",
+      "count": 10,
+      "energy": 1
+    }, {
+      "id": "c_np",
+      "type": "enhance_primary",
+      "count": 3,
+      "energy": 3
+    }, {
+      "id": "c_ns",
+      "type": "enhance_secondary",
+      "count": 3,
+      "energy": 4
+    }
+  ]
+}
