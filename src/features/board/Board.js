@@ -5,7 +5,7 @@ import styles from "./Board.module.css";
 var sets = [
   {
     charges: [2, 4, 6],
-    items: [
+    members: [
       { name: "Item", colour: "red", energy: 3 },
       { name: "Item", colour: "red", energy: 3 },
     ],
@@ -13,7 +13,7 @@ var sets = [
   },
   {
     charges: [1, 2, 3],
-    items: [
+    members: [
       { name: "Item", colour: "green", energy: 1 },
       { name: "Item", colour: "green", energy: 1 },
       { name: "Item", colour: "green", energy: 1 },
@@ -22,7 +22,7 @@ var sets = [
   },
   {
     charges: [3, 8],
-    items: [
+    members: [
       { name: "Item", colour: "cornflowerblue", energy: 4 },
       { name: "Item", colour: "cornflowerblue", energy: 4 },
     ],
@@ -30,7 +30,7 @@ var sets = [
   },
   {
     charges: [2, 4, 7],
-    items: [
+    members: [
       { name: "Item", colour: "yellow", energy: 3 },
       { name: "Item", colour: "yellow", energy: 3 },
       { name: "Item", colour: "yellow", energy: 3 },
@@ -42,23 +42,21 @@ var sets = [
   },
   {
     charges: [1, 2],
-    items: [{ name: "Item", colour: "orange", energy: 1 }],
+    members: [{ name: "Item", colour: "orange", energy: 1 }],
     enhancers: [],
   },
 ];
 
-var store = {
-  items: [
-    { energy: 1 },
-    { energy: 2 },
-    { energy: 3 },
-    { energy: 10 },
-    { energy: 1 },
-    { energy: 2 },
-    { energy: 3 },
-    { energy: 10 },
-  ],
-};
+var store = [
+  { energy: 1 },
+  { energy: 2 },
+  { energy: 3 },
+  { energy: 10 },
+  { energy: 1 },
+  { energy: 2 },
+  { energy: 3 },
+  { energy: 10 },
+];
 
 var hand = [
   { name: "Item", colour: "green", energy: 1 },
@@ -69,17 +67,18 @@ var hand = [
   { name: "Item", colour: "cornflowerblue", energy: 4 },
 ];
 
-function Item({ name, colour, energy }) {
+function Card({ name, colour, energy }) {
   return (
-    <div className={styles.item} style={{ backgroundColor: colour }}>
+    <div className={styles.card} style={{ backgroundColor: colour }}>
       <div className={styles.energy}>{energy}</div>
       {name}
     </div>
   );
 }
-function Charge({ charge, index, numItems }) {
+
+function Charge({ charge, index, numMembers }) {
   let className = `${styles.charge} ${
-    index + 1 === numItems ? styles.active : ""
+    index + 1 === numMembers ? styles.active : ""
   }`;
   return <span className={className}>{charge}</span>;
 }
@@ -88,10 +87,10 @@ function ChargeSpacer() {
   return <span className={styles.chargeSpacer}>→</span>;
 }
 
-function Charges({ charges, numItems }) {
+function Charges({ charges, numMembers }) {
   let chargeEls = Array.from(
     charges.map((c, i) => [
-      <Charge charge={c} index={i} numItems={numItems} />,
+      <Charge charge={c} index={i} numMembers={numMembers} />,
       <ChargeSpacer />,
     ])
   );
@@ -101,18 +100,18 @@ function Charges({ charges, numItems }) {
   return <div className={styles.charges}>{chargeEls}</div>;
 }
 
-function Set({ items, charges, enhancers }) {
-  let isComplete = items.length === charges.length;
-  let itemEls = items.map((i) => (
-    <Item name={i.name} colour={i.colour} energy={i.energy} />
+function Set({ members, charges, enhancers }) {
+  let isComplete = members.length === charges.length;
+  let memberEls = members.map((m) => (
+    <Card name={m.name} colour={m.colour} energy={m.energy} />
   ));
   let enhancerEls = enhancers.map((e) => (
-    <Item name={e.name} colour={e.colour} energy={e.energy} />
+    <Card name={e.name} colour={e.colour} energy={e.energy} />
   ));
   return (
     <div className={`${styles.set} ${isComplete ? styles.complete : ""}`}>
-      {itemEls}
-      <Charges charges={charges} numItems={items.length} />
+      {memberEls}
+      <Charges charges={charges} numMembers={members.length} />
       {enhancerEls}
     </div>
   );
@@ -133,7 +132,7 @@ function Store({ items }) {
 }
 
 function setLength(set) {
-  return set.items.length + set.enhancers.length;
+  return set.members.length + set.enhancers.length;
 }
 
 function setCharge(set) {
@@ -153,16 +152,16 @@ export function Board() {
   let sortedSets = sets.sort(setCompareFn);
 
   let boardEls = sortedSets.map((s) => (
-    <Set items={s.items} charges={s.charges} enhancers={s.enhancers || []} />
+    <Set members={s.members} charges={s.charges} enhancers={s.enhancers || []} />
   ));
-  boardEls.push(<Store items={store.items} />);
+  boardEls.push(<Store items={store} />);
 
   return <div className={styles.board}>{boardEls}</div>;
 }
 
 export function Hand() {
-  let handEls = hand.map((i) => (
-    <Item name={i.name} colour={i.colour} energy={i.energy} />
+  let handEls = hand.map((c) => (
+    <Card name={c.name} colour={c.colour} energy={c.energy} />
   ));
   return <div className={styles.hand}>{handEls}</div>;
 }

@@ -6,12 +6,12 @@
   margin: 1em 0;
 }
 
-.set, .store, .hand > .item{
+.set, .store, .hand > .card{
   width: 7em;
 }
 
 @media (max-width: 576px) {
-  .set, .store, .hand > .item {
+  .set, .store, .hand > .card {
     width: 30%;
   }
 }
@@ -21,7 +21,7 @@
   padding: 4px;
 }
 
-.hand > .item {
+.hand > .card {
   /* Negative margin allows vertical borders to merge together */
   /* Horizontal margin keeps inline with sets/store */
   margin-top: -1px;
@@ -33,7 +33,7 @@
   border: 4px solid lime;
 }
 
-.item {
+.card {
   padding-left: 0.5em;
   text-align: left;
   overflow: hidden;
@@ -41,12 +41,12 @@
   text-overflow: ellipsis;
 }
 
-.item, .charges, .energy {
+.card, .charges, .energy {
   border: 1px solid grey;
   box-sizing: border-box;
 }
 
-.item, .charges {
+.card, .charges {
   /* Negative margin allows vertical borders to merge together */
   margin: -1px 0;
 }
@@ -57,7 +57,7 @@
   background-color: white;
 }
 
-.item > .energy {
+.card > .energy {
   float: right;
   /* Drop all but left border */
   border: none;
