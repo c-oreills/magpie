@@ -67,11 +67,18 @@ var hand = [
   { name: "Item", colour: "cornflowerblue", energy: 4 },
 ];
 
-function Card({ name, colour, energy }) {
+function Card({ name, colour, energy, charges, numMembers }) {
   return (
     <div className={styles.card} style={{ backgroundColor: colour }}>
-      <div className={styles.energy}>{energy}</div>
-      {name}
+      <div className={styles.cardHeader}>
+        <div className={styles.energy}>{energy}</div>
+        {name}
+      </div>
+      {charges && (
+        <div className={styles.cardBody}>
+          <Charges charges={charges} numMembers={numMembers} />
+        </div>
+      )}
     </div>
   );
 }
@@ -103,16 +110,21 @@ function Charges({ charges, numMembers }) {
 function Set({ members, charges, enhancers }) {
   let isComplete = members.length === charges.length;
   let memberEls = members.map((m) => (
-    <Card name={m.name} colour={m.colour} energy={m.energy} />
+    <Card
+      name={m.name}
+      colour={m.colour}
+      energy={m.energy}
+      charges={charges}
+      numMembers={members.length}
+    />
   ));
   let enhancerEls = enhancers.map((e) => (
     <Card name={e.name} colour={e.colour} energy={e.energy} />
   ));
   return (
     <div className={`${styles.set} ${isComplete ? styles.complete : ""}`}>
-      {memberEls}
-      <Charges charges={charges} numMembers={members.length} />
-      {enhancerEls}
+      <div className={styles.setMembers}>{memberEls}</div>
+      <div className={styles.setEnhancers}>{enhancerEls}</div>
     </div>
   );
 }
@@ -152,7 +164,11 @@ export function Board() {
   let sortedSets = sets.sort(setCompareFn);
 
   let boardEls = sortedSets.map((s) => (
-    <Set members={s.members} charges={s.charges} enhancers={s.enhancers || []} />
+    <Set
+      members={s.members}
+      charges={s.charges}
+      enhancers={s.enhancers || []}
+    />
   ));
   boardEls.push(<Store items={store} />);
 
@@ -161,7 +177,7 @@ export function Board() {
 
 export function Hand() {
   let handEls = hand.map((c) => (
-    <Card name={c.name} colour={c.colour} energy={c.energy} />
+    <Card name={c.name} colour={c.colour} energy={c.energy} charges={[1, 2]} />
   ));
   return <div className={styles.hand}>{handEls}</div>;
 }

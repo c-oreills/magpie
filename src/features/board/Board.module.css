@@ -23,32 +23,45 @@
 
 .hand > .card {
   /* Negative margin allows vertical borders to merge together */
-  /* Horizontal margin keeps inline with sets/store */
   margin-top: -1px;
   margin-bottom: -1px;
+  margin: 0.1em;
 }
 
 .set.complete {
   padding: 0;
   border: 4px solid lime;
+  border-radius: 0.5em;
 }
 
 .card {
-  padding-left: 0.5em;
+  /* Use relative to force stacking context creation */
+  position: relative;
+  border-radius: 0.4em;
   text-align: left;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.card, .charges, .energy {
+.card, .energy {
   border: 1px solid grey;
-  box-sizing: border-box;
 }
 
-.card, .charges {
+.setMembers .card:not(:last-child) {
+  margin-bottom: -1.7em;
+}
+.setEnhancers .card {
   /* Negative margin allows vertical borders to merge together */
   margin: -1px 0;
+}
+
+.cardHeader {
+  padding-left: 0.5em;
+}
+
+.cardBody {
+  clear: both;
 }
 
 .energy {
@@ -57,17 +70,19 @@
   background-color: white;
 }
 
-.card > .energy {
+.cardHeader > .energy {
   float: right;
   /* Drop all but left border */
   border: none;
   border-left: 1px solid grey;
+  border-bottom: 1px solid grey;
   margin: 0;
 }
 
 .charges {
   display: flex;
   justify-content: space-around;
+  background-color: white;
   color: grey;
 }
 
