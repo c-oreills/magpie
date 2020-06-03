@@ -2,6 +2,7 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 
+import { playCard } from "../../api.js";
 import { selectBoard, selectHand } from "./boardsSlice";
 import styles from "./Board.module.css";
 
@@ -70,9 +71,17 @@ var hand = [
   { name: "Item", colour: "cornflowerblue", energy: 4 },
 ];
 
-function Card({ name, colour, energy, charges, numMembers }) {
+function Card({ id, type, name, colour, energy, charges, numMembers }) {
+  const onClick = () => {
+    playCard(id);
+  };
+
   return (
-    <div className={styles.card} style={{ backgroundColor: colour }}>
+    <div
+      className={styles.card}
+      style={{ backgroundColor: colour }}
+      onClick={onClick}
+    >
       <div className={styles.cardHeader}>
         <div className={styles.energy}>{energy}</div>
         {name}
@@ -187,6 +196,8 @@ export function Hand() {
   let handEls = hand.map((c) => (
     <Card
       key={c.id}
+      id={c.id}
+      type={c.type}
       name={c.type}
       colour={colour}
       energy={c.energy}

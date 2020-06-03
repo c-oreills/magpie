@@ -15,8 +15,12 @@ function socketServerStateUpdate(m) {
   console.log(m);
 }
 
-export function drawCards(numCards) {
+export function drawCards() {
   socket.emit("draw");
+}
+
+export function playCard(cardId) {
+  socket.emit("play", cardId);
 }
 
 export default function initSocket() {

@@ -17,6 +17,13 @@ sids_to_players = {}
 game_state = None
 
 
+def broadcast_state_to_players():
+    for sid, player_id in sids_to_players.items():
+        socketio.emit('server_state_update',
+                      game_state_for_player(player_id),
+                      room=sid)
+
+
 def read_game_json():
     with open('../src/cards.json', 'r') as f:
         return load(f)
@@ -24,6 +31,7 @@ def read_game_json():
 
 def _clone_with_id(d, n):
     return dict(d, **{'id': f'{d["id"]}_{n}'})
+
 
 def init_game_state(num_players):
     global game_state
@@ -48,9 +56,13 @@ def init_game_state(num_players):
     boards = {n: {} for n in range(num_players)}
     hands = {n: [deck.pop() for _ in range(5)] for n in range(num_players)}
 
-    game_state = {'sets': sets, 'boards': boards, 'hands': hands, 'deck': deck}
-
-    print(hands)
+    game_state = {
+        'sets': sets,
+        'boards': boards,
+        'hands': hands,
+        'deck': deck,
+        'discard': []
+    }
 
 
 def game_state_for_player(player_id):
@@ -82,6 +94,15 @@ def draw_cards(player_id):
     game_state['hands'][player_id].extend(drawn_cards)
 
 
+def play_card(player_id, card_id):
+    hand = game_state['hands'][player_id]
+    cards = [c for c in hand if c['id'] == card_id]
+    assert cards, 'Card not in hand'
+    card, = cards
+    hand.remove(card)
+    game_state['discard'].append(card)
+
+
 @socketio.on('register')
 def handle_register(player_id):
     sids_to_players[request.sid] = player_id
@@ -106,6 +127,14 @@ def handle_draw():
     socketio.emit('server_state_update',
                   game_state_for_player(player_id),
                   room=request.sid)
+
+
+@socketio.on('play')
+def handle_play(card_id):
+    player_id = sids_to_players[request.sid]
+    play_card(player_id, card_id)
+    print(f'play card {card_id} from player{player_id}')
+    broadcast_state_to_players()
 
 
 if __name__ == '__main__':
