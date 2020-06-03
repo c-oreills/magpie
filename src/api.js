@@ -6,7 +6,9 @@ import { updateBoards, updateHand, updatePlayers } from "./features/board/boards
 var socket;
 
 function socketConnect(e) {
-  socket.emit("register", 0);
+  let urlParams = new URLSearchParams(window.location.search);
+  let pid = Number(urlParams.get('p')) || 0;
+  socket.emit("register", pid);
 }
 
 function socketServerStateUpdate(m) {
