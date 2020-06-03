@@ -33,6 +33,21 @@ def _clone_with_id(d, n):
     return dict(d, **{'id': f'{d["id"]}_{n}'})
 
 
+def _calc_set_id(set_):
+    return min(c['id'] for c in set_['members'])
+
+
+def create_set_from_card(card):
+    set_id = card['id']
+    return {
+        'id': set_id,
+        'sets': card['sets'][0],
+        'members': [card],
+        'enhancers': [],
+        'charges': card['charges']
+    }
+
+
 def init_game_state(num_players):
     global game_state
     game_json = read_game_json()
@@ -42,7 +57,7 @@ def init_game_state(num_players):
 
     deck = []
     for s in sets:
-        c = dict(s, **{'type': 'member'})
+        c = dict(s, **{'type': 'member', 'sets': [s['id']]})
         for n in range(len(s['charges'])):
             deck.append(_clone_with_id(c, n))
 
@@ -108,8 +123,31 @@ def play_card(player_id, card_id):
     game_state['discard'].append(card)
 
 
-def place_card(player_id, card_id, set_id=None):
-    pass
+def place_card(player_id, card_id, set_id):
+    sets = game_state['boards'][player_id]['sets']
+    hand = game_state['hands'][player_id]
+    for loc in sets + [hand]:
+        # FIXME this is gross. Works out if we're dealing with set or hand
+        if isinstance(loc, dict):
+            is_set = True
+            l_ = loc['members']
+        else:
+            is_set = False
+            l_ = loc
+        cards = [c for c in l_ if c['id'] == card_id]
+        if cards:
+            card, = cards
+            l_.remove(card)
+            if is_set:
+                loc['id'] = _calc_set_id(loc)
+            break
+    else:
+        assert False, 'Card was not found in any location'
+
+    if set_id is None:
+        sets.append(create_set_from_card(card))
+    else:
+        set_ = [s for s in sets if s['id'] == set_id]
 
 
 def store_card(player_id, card_id):
@@ -148,6 +186,14 @@ def handle_play(card_id):
     player_id = sids_to_players[request.sid]
     play_card(player_id, card_id)
     print(f'play card {card_id} from player{player_id}')
+    broadcast_state_to_players()
+
+
+@socketio.on('place')
+def handle_place(card_id, set_id):
+    player_id = sids_to_players[request.sid]
+    place_card(player_id, card_id, set_id)
+    print(f'place card {card_id} from player{player_id}')
     broadcast_state_to_players()
 
 

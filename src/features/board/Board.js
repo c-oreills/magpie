@@ -2,7 +2,7 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 
-import { playCard, storeCard } from "../../api.js";
+import { placeCard, playCard, storeCard } from "../../api.js";
 import { selectBoard, selectHand } from "./boardsSlice";
 import styles from "./Board.module.css";
 
@@ -72,9 +72,14 @@ var hand = [
 ];
 
 function Card({ id, type, name, colour, energy, charges, numMembers }) {
+  // TODO: handle different colours
+  colour = "cornflowerblue";
+
   const onClick = () => {
     if (type === "energy") {
       storeCard(id);
+    } else if (["member", "wild"].includes(type)) {
+      placeCard(id, null);
     } else {
       playCard(id);
     }
@@ -127,7 +132,8 @@ function Set({ members, charges, enhancers }) {
   let isComplete = members.length === charges.length;
   let memberEls = members.map((m) => (
     <Card
-      name={m.name}
+      key={m.id}
+      name={m.id}
       colour={m.colour}
       energy={m.energy}
       charges={charges}
@@ -180,7 +186,8 @@ export function Board() {
       return setCharge(b) - setCharge(a);
     }
   }
-  let sortedSets = sets.sort(setCompareFn);
+  // TODO: reenable set sorting
+  let sortedSets = board.sets//.sort(setCompareFn);
 
   let boardEls = sortedSets.map((s) => (
     <Set

@@ -22,6 +22,10 @@ export function playCard(cardId) {
   socket.emit("play", cardId);
 }
 
+export function placeCard(cardId, setId) {
+  socket.emit("place", cardId, setId);
+}
+
 export function storeCard(cardId) {
   socket.emit("store", cardId);
 }
