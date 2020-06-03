@@ -1,5 +1,8 @@
 import React from "react";
 
+import { useSelector } from "react-redux";
+
+import { selectBoard, selectHand } from "./boardsSlice";
 import styles from "./Board.module.css";
 
 var sets = [
@@ -176,8 +179,23 @@ export function Board() {
 }
 
 export function Hand() {
-  let handEls = hand.map((c) => (
-    <Card name={c.name} colour={c.colour} energy={c.energy} charges={[1, 2]} />
-  ));
+  let hand = useSelector(selectHand);
+  let handCards = hand.filter((c) => c.type !== "energy");
+  let handEnergy = hand.filter((c) => c.type === "energy");
+
+  // TODO: handle different colours
+  let colour = "cornflowerblue";
+
+  let handEls = handCards
+    .map((c) => (
+      <Card
+        key={c.id}
+        name={c.type}
+        colour={colour}
+        energy={c.energy}
+        charges={c.charges}
+      />
+    ))
+    .concat(handEnergy.map((c) => <StoreItem energy={c.energy} />));
   return <div className={styles.hand}>{handEls}</div>;
 }
