@@ -38,6 +38,7 @@ def _calc_set_id(set_):
 
 
 def create_set_from_card(card):
+    assert card['type'] != 'superwild', 'Cannot create sets from superwild cards'
     set_id = card['id']
     return {
         'id': set_id,
@@ -64,7 +65,15 @@ def init_game_state(num_players):
     for c in cards:
         count = c.pop('count', 1)
         for n in range(count):
-            deck.append(_clone_with_id(c, n))
+            card = _clone_with_id(c, n)
+            if card['type'] == 'wild':
+                first_set, = [s for s in sets if s['id'] == card['sets'][0]]
+                alt_set, = [s for s in sets if s['id'] == card['sets'][1]]
+                card['charges'] = first_set['charges']
+                card['alt_charges'] = alt_set['charges']
+                # TODO: implement alternative colours for wilds
+                card['alt_colour'] = 'cornflowerblue'
+            deck.append(card)
 
     shuffle(deck)
 
