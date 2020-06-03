@@ -3,6 +3,14 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
+}
+
+.board {
+  border: 1px solid #dee2e6;
+  border-top: none;
+}
+
+.hand {
   margin: 1em 0;
 }
 

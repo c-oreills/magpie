@@ -31,3 +31,24 @@ export const handSlice = createSlice({
 export const { updateHand } = handSlice.actions;
 export const selectHand = state => state.hand;
 export const handReducer = handSlice.reducer;
+
+export const gameSlice = createSlice({
+  name: "game",
+  initialState: {
+    // TODO: select my player by default
+    activePlayerTab: 0,
+    players: [],
+  },
+  reducers: {
+    updateActivePlayerTab: (state, action) => {
+      state.activePlayerTab = action.payload;
+    },
+    updatePlayers: (state, action) => {
+      state.players = action.payload;
+    },
+  },
+});
+
+export const { updateActivePlayerTab, updatePlayers } = gameSlice.actions;
+export const selectGame = state => state.game;
+export const gameReducer = gameSlice.reducer;

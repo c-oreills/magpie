@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import { placeCard, playCard, storeCard } from "../../api.js";
-import { selectBoard, selectHand } from "./boardsSlice";
+import { selectBoard, selectGame, selectHand } from "./boardsSlice";
 import styles from "./Board.module.css";
 
 var sets = [
@@ -175,8 +175,8 @@ function setCharge(set) {
 }
 
 export function Board() {
-  // TODO: support other players
-  let board = useSelector(selectBoard(0));
+  let game = useSelector(selectGame);
+  let board = useSelector(selectBoard(game.activePlayerTab));
 
   function setCompareFn(a, b) {
     let lengthDiff = setLength(b) - setLength(a);

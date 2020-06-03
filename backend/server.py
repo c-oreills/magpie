@@ -77,11 +77,14 @@ def init_game_state(num_players):
 
     shuffle(deck)
 
+    # TODO: support dynamic player list
     boards = {n: {'sets': [], 'store': []} for n in range(num_players)}
     hands = {n: [deck.pop() for _ in range(5)] for n in range(num_players)}
 
     game_state = {
         'sets': sets,
+        # TODO: support dynamic player list
+        'players': ['Christy', 'Abbie'],
         'boards': boards,
         'hands': hands,
         'deck': deck,

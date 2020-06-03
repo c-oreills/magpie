@@ -1,11 +1,12 @@
 import React from "react";
 
+import { useDispatch, useSelector } from "react-redux";
+
 import { drawCards } from "../../api.js";
 
-import styles from "./Controls.module.css";
+import { selectGame, updateActivePlayerTab } from "../board/boardsSlice";
 
-var players = ["Player1", "Player2", "Player3", "Player4"];
-var activePlayer = "Player2";
+import styles from "./Controls.module.css";
 
 export function ActionBar() {
   return (
@@ -20,12 +21,15 @@ export function ActionBar() {
 }
 
 export function SelectorBar() {
-  let playerEls = players.map((p) => (
-    <button
-      className={`btn ${p === activePlayer ? "btn-success" : "btn-primary"}`}
-    >
-      {p}
-    </button>
+  let dispatch = useDispatch();
+  let game = useSelector(selectGame);
+
+  let playerEls = game.players.map((p, i) => (
+    <div className="nav-item" role="tablist">
+      <a className={`nav-link ${i === game.activePlayerTab && "active"}`}
+         onClick={() => dispatch(updateActivePlayerTab(i))}
+      >{p}</a>
+    </div>
   ));
-  return <div className={styles.selectorBar}>{playerEls}</div>;
+  return <div className="nav nav-tabs">{playerEls}</div>;
 }
