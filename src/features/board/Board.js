@@ -2,7 +2,7 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 
-import { playCard } from "../../api.js";
+import { playCard, storeCard } from "../../api.js";
 import { selectBoard, selectHand } from "./boardsSlice";
 import styles from "./Board.module.css";
 
@@ -73,7 +73,11 @@ var hand = [
 
 function Card({ id, type, name, colour, energy, charges, numMembers }) {
   const onClick = () => {
-    playCard(id);
+    if (type === "energy") {
+      storeCard(id);
+    } else {
+      playCard(id);
+    }
   };
 
   return (
@@ -146,7 +150,7 @@ function StoreItem({ energy }) {
 }
 
 function Store({ items }) {
-  let storeEls = items.map((i) => <StoreItem energy={i.energy} />);
+  let storeEls = items.map((i) => <StoreItem key={i.id} energy={i.energy} />);
   return (
     <div className={styles.store}>
       <div className={styles.storeHeader}>Store</div>
@@ -165,6 +169,9 @@ function setCharge(set) {
 }
 
 export function Board() {
+  // TODO: support other players
+  let board = useSelector(selectBoard(0));
+
   function setCompareFn(a, b) {
     let lengthDiff = setLength(b) - setLength(a);
     if (lengthDiff) {
@@ -182,7 +189,7 @@ export function Board() {
       enhancers={s.enhancers || []}
     />
   ));
-  boardEls.push(<Store items={store} />);
+  boardEls.push(<Store items={board.store} />);
 
   return <div className={styles.board}>{boardEls}</div>;
 }

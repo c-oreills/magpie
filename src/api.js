@@ -12,7 +12,6 @@ function socketConnect(e) {
 function socketServerStateUpdate(m) {
   store.dispatch(updateBoards(m.boards));
   store.dispatch(updateHand(m.hand));
-  console.log(m);
 }
 
 export function drawCards() {
@@ -21,6 +20,10 @@ export function drawCards() {
 
 export function playCard(cardId) {
   socket.emit("play", cardId);
+}
+
+export function storeCard(cardId) {
+  socket.emit("store", cardId);
 }
 
 export default function initSocket() {

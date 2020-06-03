@@ -53,7 +53,7 @@ def init_game_state(num_players):
 
     shuffle(deck)
 
-    boards = {n: {} for n in range(num_players)}
+    boards = {n: {'sets': [], 'store': []} for n in range(num_players)}
     hands = {n: [deck.pop() for _ in range(5)] for n in range(num_players)}
 
     game_state = {
@@ -94,13 +94,27 @@ def draw_cards(player_id):
     game_state['hands'][player_id].extend(drawn_cards)
 
 
-def play_card(player_id, card_id):
+def remove_card_from_hand(player_id, card_id):
     hand = game_state['hands'][player_id]
     cards = [c for c in hand if c['id'] == card_id]
     assert cards, 'Card not in hand'
     card, = cards
     hand.remove(card)
+    return card
+
+
+def play_card(player_id, card_id):
+    card = remove_card_from_hand(player_id, card_id)
     game_state['discard'].append(card)
+
+
+def place_card(player_id, card_id, set_id=None):
+    pass
+
+
+def store_card(player_id, card_id):
+    card = remove_card_from_hand(player_id, card_id)
+    game_state['boards'][player_id]['store'].append(card)
 
 
 @socketio.on('register')
@@ -134,6 +148,14 @@ def handle_play(card_id):
     player_id = sids_to_players[request.sid]
     play_card(player_id, card_id)
     print(f'play card {card_id} from player{player_id}')
+    broadcast_state_to_players()
+
+
+@socketio.on('store')
+def handle_store(card_id):
+    player_id = sids_to_players[request.sid]
+    store_card(player_id, card_id)
+    print(f'store card {card_id} from player{player_id}')
     broadcast_state_to_players()
 
 
