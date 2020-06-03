@@ -22,6 +22,9 @@ def read_game_json():
         return load(f)
 
 
+def _clone_with_id(d, n):
+    return dict(d, **{'id': f'{d["id"]}_{n}'})
+
 def init_game_state(num_players):
     global game_state
     game_json = read_game_json()
@@ -31,12 +34,14 @@ def init_game_state(num_players):
 
     deck = []
     for s in sets:
-        pass
+        c = dict(s, **{'type': 'member'})
+        for n in range(len(s['charges'])):
+            deck.append(_clone_with_id(c, n))
 
     for c in cards:
         count = c.pop('count', 1)
         for n in range(count):
-            deck.append(dict(c, **{'id': f'{c["id"]}_{n}'}))
+            deck.append(_clone_with_id(c, n))
 
     shuffle(deck)
 
