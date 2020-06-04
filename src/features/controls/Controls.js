@@ -1,5 +1,7 @@
 import React from "react";
-
+import Button from "react-bootstrap/Button";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 import { useDispatch, useSelector } from "react-redux";
 
 import { drawCards } from "../../api.js";
@@ -11,11 +13,11 @@ import styles from "./Controls.module.css";
 export function ActionBar() {
   return (
     <div className={styles.actionBar}>
-      <button className="btn btn-success" onClick={drawCards}>
+      <Button variant="success" onClick={drawCards}>
         Draw
-      </button>
-      <button className="btn btn-primary">Give</button>
-      <button className="btn btn-danger">Done</button>
+      </Button>
+      <Button variant="primary">Give</Button>
+      <Button variant="danger">Done</Button>
     </div>
   );
 }
@@ -25,11 +27,12 @@ export function SelectorBar() {
   let game = useSelector(selectGame);
 
   let playerEls = game.players.map((p, i) => (
-    <div className="nav-item" role="tablist" key={i}>
-      <button className={`nav-link ${i === game.activePlayerTab && "active"}`}
-         onClick={() => dispatch(updateActivePlayerTab(i))}
-      >{p}</button>
-    </div>
+    <Tab key={i} eventKey={i} title={p} />
   ));
-  return <div className="nav nav-tabs">{playerEls}</div>;
+
+  return (
+    <Tabs onSelect={(k) => dispatch(updateActivePlayerTab(k))}>
+      {playerEls}
+    </Tabs>
+  );
 }
