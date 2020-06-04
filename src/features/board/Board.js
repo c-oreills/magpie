@@ -182,6 +182,7 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
   let memberEls = members.map((m) => (
     <Card
       key={m.id}
+      id={m.id}
       type={m.type}
       name={m.name}
       colour={m.colour}
