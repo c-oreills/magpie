@@ -25,7 +25,7 @@ export function SelectorBar() {
   let game = useSelector(selectGame);
 
   let playerEls = game.players.map((p, i) => (
-    <div className="nav-item" role="tablist">
+    <div className="nav-item" role="tablist" key={i}>
       <a className={`nav-link ${i === game.activePlayerTab && "active"}`}
          onClick={() => dispatch(updateActivePlayerTab(i))}
       >{p}</a>

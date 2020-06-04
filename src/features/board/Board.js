@@ -118,8 +118,8 @@ function ChargeSpacer() {
 function Charges({ charges, numMembers }) {
   let chargeEls = Array.from(
     charges.map((c, i) => [
-      <Charge charge={c} index={i} numMembers={numMembers} />,
-      <ChargeSpacer />,
+      <Charge key={"c" + i} charge={c} index={i} numMembers={numMembers} />,
+      <ChargeSpacer key={"s" + i} />,
     ])
   );
   // Remove last spacer
@@ -187,16 +187,17 @@ export function Board() {
     }
   }
   // TODO: reenable set sorting
-  let sortedSets = board.sets//.sort(setCompareFn);
+  let sortedSets = board.sets; //.sort(setCompareFn);
 
   let boardEls = sortedSets.map((s) => (
     <Set
+      key={s.id}
       members={s.members}
       charges={s.charges}
       enhancers={s.enhancers || []}
     />
   ));
-  boardEls.push(<Store items={board.store} />);
+  boardEls.push(<Store key={"store"} items={board.store} />);
 
   return <div className={styles.board}>{boardEls}</div>;
 }
