@@ -124,7 +124,8 @@ def init_game_state(num_players):
         'boards': boards,
         'hands': hands,
         'deck': deck,
-        'discard': []
+        'discard': [],
+        'log': []
     }
 
 
@@ -139,6 +140,15 @@ def game_state_for_player(player_id):
     del gs['deck']
 
     return gs
+
+
+def _remove_card_from_hand(player_id, card_id):
+    hand = game_state['hands'][player_id]
+    cards = [c for c in hand if c['id'] == card_id]
+    assert cards, 'Card not in hand'
+    card, = cards
+    hand.remove(card)
+    return card
 
 
 @atomic_state_change
@@ -156,15 +166,7 @@ def draw_cards(player_id):
 
     drawn_cards, game_state['deck'] = deck[:num_cards], deck[num_cards:]
     game_state['hands'][player_id].extend(drawn_cards)
-
-
-def _remove_card_from_hand(player_id, card_id):
-    hand = game_state['hands'][player_id]
-    cards = [c for c in hand if c['id'] == card_id]
-    assert cards, 'Card not in hand'
-    card, = cards
-    hand.remove(card)
-    return card
+    game_state['log'].append()
 
 
 @atomic_state_change
