@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 import store from "./app/store";
-import { updateBoards, updateHand, updatePlayers } from "./features/board/boardsSlice";
+import { updateBoards, updateHand, updatePlayers, updatePlayerId } from "./features/board/boardsSlice";
 
 var socket;
 
@@ -9,6 +9,7 @@ function socketConnect(e) {
   let urlParams = new URLSearchParams(window.location.search);
   let pid = Number(urlParams.get('p')) || 0;
   socket.emit("register", pid);
+  store.dispatch(updatePlayerId(pid));
 }
 
 function socketServerStateUpdate(m) {
@@ -19,6 +20,10 @@ function socketServerStateUpdate(m) {
 
 export function drawCards() {
   socket.emit("draw");
+}
+
+export function flipCard(cardId) {
+  socket.emit("flip", cardId);
 }
 
 export function playCard(cardId) {

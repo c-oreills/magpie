@@ -1,5 +1,8 @@
-from random import shuffle
+from functools import wraps
 from json import load
+import pickle
+from random import shuffle
+import sys
 
 from flask import Flask, render_template, request
 from flask_cors import CORS
@@ -15,6 +18,35 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 sids_to_players = {}
 game_state = None
+
+GAME_STATE_FILE = 'game_state.pickle'
+
+
+def dump_game_state():
+    with open(GAME_STATE_FILE, 'wb') as f:
+        pickle.dump(game_state, f)
+
+
+def load_game_state():
+    with open(GAME_STATE_FILE, 'rb') as f:
+        return pickle.load(f)
+
+
+def atomic_state_change(fn):
+    @wraps(fn)
+    def inner(*a, **k):
+        global game_state
+        try:
+            ret = fn(*a, **k)
+        except:
+            # Refresh game state from disk so it's not corrupted
+            game_state = load_game_state()
+            raise
+        else:
+            dump_game_state()
+            return ret
+
+    return inner
 
 
 def broadcast_state_to_players():
@@ -37,12 +69,12 @@ def _calc_set_id(set_):
     return min(c['id'] for c in set_['members'])
 
 
-def create_set_from_card(card):
-    assert card['type'] != 'superwild', 'Cannot create sets from superwild cards'
+def _create_set_from_card(card):
+    assert not card['id'].startswith('c_wsuper_'), 'Cannot create sets from superwild cards'
     set_id = card['id']
     return {
         'id': set_id,
-        'sets': card['sets'][0],
+        'set': card['sets'][0],
         'members': [card],
         'enhancers': [],
         'charges': card['charges']
@@ -60,13 +92,17 @@ def init_game_state(num_players):
     for s in sets:
         c = dict(s, **{'type': 'member', 'sets': [s['id']]})
         for n in range(len(s['charges'])):
-            deck.append(_clone_with_id(c, n))
+            card = _clone_with_id(c, n)
+            # TODO: add proper names
+            card['name'] = card['id']
+            deck.append(card)
 
     for c in cards:
         count = c.pop('count', 1)
         for n in range(count):
             card = _clone_with_id(c, n)
             if card['type'] == 'wild':
+                card['name'] = card['id']
                 first_set, = [s for s in sets if s['id'] == card['sets'][0]]
                 alt_set, = [s for s in sets if s['id'] == card['sets'][1]]
                 card['charges'] = first_set['charges']
@@ -105,6 +141,7 @@ def game_state_for_player(player_id):
     return gs
 
 
+@atomic_state_change
 def draw_cards(player_id):
     deck = game_state['deck']
     hand = game_state['hands'][player_id]
@@ -121,7 +158,7 @@ def draw_cards(player_id):
     game_state['hands'][player_id].extend(drawn_cards)
 
 
-def remove_card_from_hand(player_id, card_id):
+def _remove_card_from_hand(player_id, card_id):
     hand = game_state['hands'][player_id]
     cards = [c for c in hand if c['id'] == card_id]
     assert cards, 'Card not in hand'
@@ -130,11 +167,13 @@ def remove_card_from_hand(player_id, card_id):
     return card
 
 
+@atomic_state_change
 def play_card(player_id, card_id):
-    card = remove_card_from_hand(player_id, card_id)
+    card = _remove_card_from_hand(player_id, card_id)
     game_state['discard'].append(card)
 
 
+@atomic_state_change
 def place_card(player_id, card_id, set_id):
     sets = game_state['boards'][player_id]['sets']
     hand = game_state['hands'][player_id]
@@ -157,13 +196,16 @@ def place_card(player_id, card_id, set_id):
         assert False, 'Card was not found in any location'
 
     if set_id is None:
-        sets.append(create_set_from_card(card))
+        sets.append(_create_set_from_card(card))
     else:
-        set_ = [s for s in sets if s['id'] == set_id]
+        # TODO handle enhancers
+        set_, = [s for s in sets if s['id'] == set_id]
+        set_['members'].append(card)
 
 
+@atomic_state_change
 def store_card(player_id, card_id):
-    card = remove_card_from_hand(player_id, card_id)
+    card = _remove_card_from_hand(player_id, card_id)
     game_state['boards'][player_id]['store'].append(card)
 
 
@@ -193,6 +235,15 @@ def handle_draw():
                   room=request.sid)
 
 
+@socketio.on('flip')
+def handle_flip(card_id):
+    player_id = sids_to_players[request.sid]
+    # TODO: implement me
+    flip_card(player_id, card_id)
+    print(f'flip card {card_id} from player{player_id}')
+    broadcast_state_to_players()
+
+
 @socketio.on('play')
 def handle_play(card_id):
     player_id = sids_to_players[request.sid]
@@ -205,7 +256,7 @@ def handle_play(card_id):
 def handle_place(card_id, set_id):
     player_id = sids_to_players[request.sid]
     place_card(player_id, card_id, set_id)
-    print(f'place card {card_id} from player{player_id}')
+    print(f'place card {card_id} into set {set_id} from player{player_id}')
     broadcast_state_to_players()
 
 
@@ -218,5 +269,9 @@ def handle_store(card_id):
 
 
 if __name__ == '__main__':
-    init_game_state(2)
-    socketio.run(app, host='0.0.0.0')
+    if sys.argv[-1] == 'init':
+        init_game_state(2)
+        dump_game_state()
+    else:
+        game_state = load_game_state()
+        socketio.run(app, host='0.0.0.0')

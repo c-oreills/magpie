@@ -1,8 +1,10 @@
 import React from "react";
-
+import Button from "react-bootstrap/Button";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
 import { useSelector } from "react-redux";
 
-import { placeCard, playCard, storeCard } from "../../api.js";
+import { flipCard, placeCard, playCard, storeCard } from "../../api.js";
 import { selectBoard, selectGame, selectHand } from "./boardsSlice";
 import styles from "./Board.module.css";
 
@@ -71,36 +73,83 @@ var hand = [
   { name: "Item", colour: "cornflowerblue", energy: 4 },
 ];
 
-function Card({ id, type, name, colour, energy, charges, numMembers }) {
+function cardIsStorable(type) {
+  return !["member", "wild"].includes(type);
+}
+
+function cardIsPlaceable(type) {
+  return ["member", "wild", "enhancer"].includes(type);
+}
+
+function cardIsPlayable(type) {
+  return type !== "energy" && cardIsStorable(type);
+}
+
+function cardIsFlippable(type, altCharges) {
+  return type === "wild" && altCharges;
+}
+
+function Card({
+  id,
+  type,
+  name,
+  colour,
+  energy,
+  charges,
+  matchingSets,
+  numMembers,
+}) {
   // TODO: handle different colours
   colour = "cornflowerblue";
 
-  const onClick = () => {
-    if (type === "energy") {
-      storeCard(id);
-    } else if (["member", "wild"].includes(type)) {
-      placeCard(id, null);
-    } else {
-      playCard(id);
-    }
-  };
+  const placeSetEls =
+    matchingSets &&
+    cardIsPlaceable(type) &&
+    matchingSets.map((s) => (
+      <Button key={s.id} onClick={() => placeCard(id, s.id)}>
+        Place in {s.members[0].name}
+      </Button>
+    ));
+
+  const popover = (
+    <Popover>
+      <Popover.Content className={styles.actionPopover}>
+        {cardIsPlaceable(type) && (
+          <Button onClick={() => placeCard(id)}>Place in New</Button>
+        )}
+        {placeSetEls}
+        {cardIsFlippable(type) && (
+          <Button onClick={() => flipCard(id)}>Flip</Button>
+        )}
+        {cardIsPlayable(type) && (
+          <Button onClick={() => playCard(id)}>Play</Button>
+        )}
+        {cardIsStorable(type) && (
+          <Button onClick={() => storeCard(id)}>Store</Button>
+        )}
+      </Popover.Content>
+    </Popover>
+  );
 
   return (
-    <div
-      className={styles.card}
-      style={{ backgroundColor: colour }}
-      onClick={onClick}
+    <OverlayTrigger
+      trigger="click"
+      rootClose={true}
+      placement="bottom"
+      overlay={popover}
     >
-      <div className={styles.cardHeader}>
-        <div className={styles.energy}>{energy}</div>
-        {name}
-      </div>
-      {charges && (
-        <div className={styles.cardBody}>
-          <Charges charges={charges} numMembers={numMembers} />
+      <div className={styles.card} style={{ backgroundColor: colour }}>
+        <div className={styles.cardHeader}>
+          <div className={styles.energy}>{energy}</div>
+          {name}
         </div>
-      )}
-    </div>
+        {charges && (
+          <div className={styles.cardBody}>
+            <Charges charges={charges} numMembers={numMembers} />
+          </div>
+        )}
+      </div>
+    </OverlayTrigger>
   );
 }
 
@@ -128,20 +177,23 @@ function Charges({ charges, numMembers }) {
   return <div className={styles.charges}>{chargeEls}</div>;
 }
 
-function Set({ members, charges, enhancers }) {
+function Set({ members, charges, enhancers, findMatchingSets }) {
   let isComplete = members.length === charges.length;
   let memberEls = members.map((m) => (
     <Card
       key={m.id}
-      name={m.id}
+      type={m.type}
+      name={m.name}
       colour={m.colour}
       energy={m.energy}
       charges={charges}
+      sets={m.sets}
+      matchingSets={findMatchingSets(m)}
       numMembers={members.length}
     />
   ));
   let enhancerEls = enhancers.map((e) => (
-    <Card name={e.name} colour={e.colour} energy={e.energy} />
+    <Card name={e.name || e.type} colour={e.colour} energy={e.energy} />
   ));
   return (
     <div className={`${styles.set} ${isComplete ? styles.complete : ""}`}>
@@ -174,9 +226,23 @@ function setCharge(set) {
   return set.charges[set.charges.length - 1];
 }
 
+function makeFindMatchingSets(board) {
+  return function findMatchingSets(card) {
+    if (!card.sets) {
+      return [];
+    }
+    return board.sets.filter(
+      (s) => card.sets.includes(s.set) && !s.members.includes(card)
+    );
+  };
+}
+
 export function Board() {
   let game = useSelector(selectGame);
   let board = useSelector(selectBoard(game.activePlayerTab));
+  let playerBoard = useSelector(selectBoard(game.playerId));
+
+  const findMatchingSets = makeFindMatchingSets(playerBoard);
 
   function setCompareFn(a, b) {
     let lengthDiff = setLength(b) - setLength(a);
@@ -195,6 +261,7 @@ export function Board() {
       members={s.members}
       charges={s.charges}
       enhancers={s.enhancers || []}
+      findMatchingSets={findMatchingSets}
     />
   ));
   boardEls.push(<Store key={"store"} items={board.store} />);
@@ -204,6 +271,10 @@ export function Board() {
 
 export function Hand() {
   let hand = useSelector(selectHand);
+  let game = useSelector(selectGame);
+  let playerBoard = useSelector(selectBoard(game.playerId));
+
+  const findMatchingSets = makeFindMatchingSets(playerBoard);
 
   // TODO: handle different colours
   let colour = "cornflowerblue";
@@ -213,10 +284,11 @@ export function Hand() {
       key={c.id}
       id={c.id}
       type={c.type}
-      name={c.type}
+      name={c.name || c.type}
       colour={colour}
       energy={c.energy}
       charges={c.charges}
+      matchingSets={findMatchingSets(c)}
     />
   ));
   return <div className={styles.hand}>{handEls}</div>;

@@ -113,3 +113,8 @@
   /* Negative margin allows borders to merge together */
   margin: -0.5px;
 }
+
+.actionPopover > button {
+  display: block;
+  margin: 0.25em auto;
+}
