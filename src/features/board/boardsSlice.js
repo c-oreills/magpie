@@ -37,6 +37,7 @@ export const gameSlice = createSlice({
   initialState: {
     // TODO: select my player by default
     activePlayerTab: 0,
+    log: [],
     players: [],
     playerId: null,
   },
@@ -44,15 +45,18 @@ export const gameSlice = createSlice({
     updateActivePlayerTab: (state, action) => {
       state.activePlayerTab = action.payload;
     },
+    updateLog: (state, action) => {
+      state.log = action.payload;
+    },
     updatePlayers: (state, action) => {
       state.players = action.payload;
     },
     updatePlayerId: (state, action) => {
       state.playerId = action.payload;
-    }
+    },
   },
 });
 
-export const { updateActivePlayerTab, updatePlayers, updatePlayerId } = gameSlice.actions;
+export const { updateActivePlayerTab, updateLog, updatePlayers, updatePlayerId } = gameSlice.actions;
 export const selectGame = state => state.game;
 export const gameReducer = gameSlice.reducer;

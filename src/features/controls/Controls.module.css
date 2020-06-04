@@ -7,3 +7,8 @@
   margin: 0px 1px;
   flex-grow: 1;
 }
+
+.log {
+  max-height: 8em;
+  overflow: scroll;
+}

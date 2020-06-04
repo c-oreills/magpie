@@ -101,8 +101,10 @@ def init_game_state(num_players):
         count = c.pop('count', 1)
         for n in range(count):
             card = _clone_with_id(c, n)
+            # TODO: add proper names
+            card['name'] = card['id']
+
             if card['type'] == 'wild':
-                card['name'] = card['id']
                 first_set, = [s for s in sets if s['id'] == card['sets'][0]]
                 alt_set, = [s for s in sets if s['id'] == card['sets'][1]]
                 card['charges'] = first_set['charges']
@@ -151,6 +153,10 @@ def _remove_card_from_hand(player_id, card_id):
     return card
 
 
+def _get_player_name(player_id):
+    return game_state['players'][player_id]
+
+
 @atomic_state_change
 def draw_cards(player_id):
     deck = game_state['deck']
@@ -166,13 +172,14 @@ def draw_cards(player_id):
 
     drawn_cards, game_state['deck'] = deck[:num_cards], deck[num_cards:]
     game_state['hands'][player_id].extend(drawn_cards)
-    game_state['log'].append()
+    game_state['log'].append(f'{_get_player_name(player_id)} drew {num_cards} cards')
 
 
 @atomic_state_change
 def play_card(player_id, card_id):
     card = _remove_card_from_hand(player_id, card_id)
     game_state['discard'].append(card)
+    game_state['log'].append(f'{_get_player_name(player_id)} played {card["name"]}')
 
 
 @atomic_state_change
@@ -203,12 +210,14 @@ def place_card(player_id, card_id, set_id):
         # TODO handle enhancers
         set_, = [s for s in sets if s['id'] == set_id]
         set_['members'].append(card)
+    game_state['log'].append(f'{_get_player_name(player_id)} placed {card["name"]}')
 
 
 @atomic_state_change
 def store_card(player_id, card_id):
     card = _remove_card_from_hand(player_id, card_id)
     game_state['boards'][player_id]['store'].append(card)
+    game_state['log'].append(f'{_get_player_name(player_id)} stored {card["name"]}')
 
 
 @socketio.on('register')
@@ -231,7 +240,6 @@ def handle_disconnect():
 def handle_draw():
     player_id = sids_to_players[request.sid]
     draw_cards(player_id)
-    print(f'draw cards from player{player_id}')
     socketio.emit('server_state_update',
                   game_state_for_player(player_id),
                   room=request.sid)
@@ -242,7 +250,6 @@ def handle_flip(card_id):
     player_id = sids_to_players[request.sid]
     # TODO: implement me
     flip_card(player_id, card_id)
-    print(f'flip card {card_id} from player{player_id}')
     broadcast_state_to_players()
 
 
@@ -250,7 +257,6 @@ def handle_flip(card_id):
 def handle_play(card_id):
     player_id = sids_to_players[request.sid]
     play_card(player_id, card_id)
-    print(f'play card {card_id} from player{player_id}')
     broadcast_state_to_players()
 
 
@@ -258,7 +264,6 @@ def handle_play(card_id):
 def handle_place(card_id, set_id):
     player_id = sids_to_players[request.sid]
     place_card(player_id, card_id, set_id)
-    print(f'place card {card_id} into set {set_id} from player{player_id}')
     broadcast_state_to_players()
 
 
@@ -266,7 +271,6 @@ def handle_place(card_id, set_id):
 def handle_store(card_id):
     player_id = sids_to_players[request.sid]
     store_card(player_id, card_id)
-    print(f'store card {card_id} from player{player_id}')
     broadcast_state_to_players()
 
 

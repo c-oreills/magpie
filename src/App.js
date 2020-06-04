@@ -1,6 +1,6 @@
 import React from "react";
 import { Board, Hand } from "./features/board/Board";
-import { ActionBar, SelectorBar } from "./features/controls/Controls";
+import { ActionBar, Log, SelectorBar } from "./features/controls/Controls";
 import "./App.css";
 
 function App() {
@@ -10,6 +10,7 @@ function App() {
       <Board />
       <Hand />
       <ActionBar />
+      <Log />
     </div>
   );
 }

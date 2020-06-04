@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 import store from "./app/store";
-import { updateBoards, updateHand, updatePlayers, updatePlayerId } from "./features/board/boardsSlice";
+import { updateBoards, updateHand, updateLog, updatePlayers, updatePlayerId } from "./features/board/boardsSlice";
 
 var socket;
 
@@ -16,6 +16,7 @@ function socketServerStateUpdate(m) {
   store.dispatch(updateBoards(m.boards));
   store.dispatch(updateHand(m.hand));
   store.dispatch(updatePlayers(m.players));
+  store.dispatch(updateLog(m.log));
 }
 
 export function drawCards() {

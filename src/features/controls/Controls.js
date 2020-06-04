@@ -36,3 +36,12 @@ export function SelectorBar() {
     </Tabs>
   );
 }
+
+export function Log() {
+  let game = useSelector(selectGame);
+
+  let logEls = game.log.map((l) => <li>{l}</li>);
+  logEls.reverse();
+
+  return <ul className={styles.log}>{logEls}</ul>;
+}
