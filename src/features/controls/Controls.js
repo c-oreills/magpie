@@ -26,9 +26,9 @@ export function SelectorBar() {
 
   let playerEls = game.players.map((p, i) => (
     <div className="nav-item" role="tablist" key={i}>
-      <a className={`nav-link ${i === game.activePlayerTab && "active"}`}
+      <button className={`nav-link ${i === game.activePlayerTab && "active"}`}
          onClick={() => dispatch(updateActivePlayerTab(i))}
-      >{p}</a>
+      >{p}</button>
     </div>
   ));
   return <div className="nav nav-tabs">{playerEls}</div>;
