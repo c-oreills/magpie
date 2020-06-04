@@ -154,6 +154,41 @@ def _remove_card_from_hand(player_id, card_id):
     return card
 
 
+def _find_card_loc(player_id, card_id):
+    sets = game_state['boards'][player_id]['sets']
+    hand = game_state['hands'][player_id]
+    store = game_state['boards'][player_id]['store']
+
+    def _check_card_in_list(l):
+        cards = [c for c in l if c['id'] == card_id]
+        if cards:
+            card, = cards
+            return card
+
+    for s in sets:
+        card = _check_card_in_list(s['members'])
+        if card:
+            return ('set', s, card)
+
+    card = _check_card_in_list(hand)
+    if card:
+        return ('hand', hand, card)
+
+    card = _check_card_in_list(store)
+    if card:
+        return ('store', store, card)
+
+    assert False, 'Card was not found in any location'
+
+
+def _remove_card_from_loc(loc_type, loc, card):
+    if loc_type == 'set':
+        loc['members'].remove(card)
+        loc['id'] = _calc_set_id(loc)
+    else:
+        loc.remove(card)
+
+
 def _get_player_name(player_id):
     return game_state['players'][player_id]
 
@@ -173,52 +208,49 @@ def draw_cards(player_id):
 
     drawn_cards, game_state['deck'] = deck[:num_cards], deck[num_cards:]
     game_state['hands'][player_id].extend(drawn_cards)
-    game_state['log'].append(f'{_get_player_name(player_id)} drew {num_cards} cards')
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} drew {num_cards} cards')
 
 
 @atomic_state_change
 def play_card(player_id, card_id):
-    card = _remove_card_from_hand(player_id, card_id)
+    loc_type, loc, card = _find_card_loc(player_id, card_id)
+    assert loc_type == 'hand', "Card not in hand"
+    _remove_card_from_loc(loc_type, loc, card)
     game_state['discard'].append(card)
-    game_state['log'].append(f'{_get_player_name(player_id)} played {card["name"]}')
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} played {card["name"]}')
 
 
 @atomic_state_change
 def place_card(player_id, card_id, set_id):
-    sets = game_state['boards'][player_id]['sets']
-    hand = game_state['hands'][player_id]
-    for loc in sets + [hand]:
-        # FIXME this is gross. Works out if we're dealing with set or hand
-        if isinstance(loc, dict):
-            is_set = True
-            l_ = loc['members']
-        else:
-            is_set = False
-            l_ = loc
-        cards = [c for c in l_ if c['id'] == card_id]
-        if cards:
-            card, = cards
-            l_.remove(card)
-            if is_set:
-                loc['id'] = _calc_set_id(loc)
-            break
-    else:
-        assert False, 'Card was not found in any location'
+    loc_type, loc, card = _find_card_loc(player_id, card_id)
+    assert loc_type != 'store', "Can't place card from store"
+    _remove_card_from_loc(loc_type, loc, card)
 
+    sets = game_state['boards'][player_id]['sets']
     if set_id is None:
         sets.append(_create_set_from_card(card))
     else:
         # TODO handle enhancers
         set_, = [s for s in sets if s['id'] == set_id]
         set_['members'].append(card)
-    game_state['log'].append(f'{_get_player_name(player_id)} placed {card["name"]}')
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} placed {card["name"]}')
 
 
 @atomic_state_change
 def store_card(player_id, card_id):
-    card = _remove_card_from_hand(player_id, card_id)
+    loc_type, loc, card = _find_card_loc(player_id, card_id)
+    _remove_card_from_loc(loc_type, loc, card)
     game_state['boards'][player_id]['store'].append(card)
-    game_state['log'].append(f'{_get_player_name(player_id)} stored {card["name"]}')
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} stored {card["name"]}')
+
+
+@atomic_state_change
+def give_card(player_id, card_id, to_player_id):
+    pass
 
 
 @socketio.on('register')
@@ -272,6 +304,13 @@ def handle_place(card_id, set_id):
 def handle_store(card_id):
     player_id = sids_to_players[request.sid]
     store_card(player_id, card_id)
+    broadcast_state_to_players()
+
+
+@socketio.on('give')
+def handle_give(card_id, to_player_id):
+    player_id = sids_to_players[request.sid]
+    give_card(player_id, card_id, to_player_id)
     broadcast_state_to_players()
 
 
