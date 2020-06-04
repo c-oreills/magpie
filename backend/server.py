@@ -70,7 +70,8 @@ def _calc_set_id(set_):
 
 
 def _create_set_from_card(card):
-    assert not card['id'].startswith('c_wsuper_'), 'Cannot create sets from superwild cards'
+    assert not card['id'].startswith(
+        'c_wsuper_'), 'Cannot create sets from superwild cards'
     set_id = card['id']
     return {
         'id': set_id,
