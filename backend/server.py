@@ -85,7 +85,7 @@ def _create_set_from_card(card):
     }
 
 
-def init_game_state(num_players):
+def init_game_state(players):
     global game_state
     game_json = read_game_json()
 
@@ -134,13 +134,12 @@ def init_game_state(num_players):
     shuffle(deck)
 
     # TODO: support dynamic player list
-    boards = {n: {'sets': [], 'store': []} for n in range(num_players)}
-    hands = {n: [deck.pop() for _ in range(5)] for n in range(num_players)}
+    boards = {n: {'sets': [], 'store': []} for n in range(len(players))}
+    hands = {n: [deck.pop() for _ in range(5)] for n in range(len(players))}
 
     game_state = {
         'sets': sets,
-        # TODO: support dynamic player list
-        'players': ['Christy', 'Abbie'],
+        'players': players,
         'boards': boards,
         'hands': hands,
         'deck': deck,
@@ -381,7 +380,7 @@ def handle_give(card_id, to_player_id):
 
 if __name__ == '__main__':
     if sys.argv[-1] == 'init':
-        init_game_state(2)
+        init_game_state(['Christy', 'Abbie'])
         dump_game_state()
     else:
         game_state = load_game_state()
