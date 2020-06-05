@@ -73,6 +73,10 @@ var hand = [
   { name: "Item", colour: "cornflowerblue", energy: 4 },
 ];
 
+function cardIsNotOnlySetMember(numMembers) {
+  return !(numMembers === 1);
+}
+
 function cardIsStorable(type) {
   return !["member", "wild"].includes(type);
 }
@@ -81,13 +85,17 @@ function cardIsPlaceable(type) {
   return ["member", "wild", "enhancer"].includes(type);
 }
 
+function cardIsPlaceableInNew(type, numMembers) {
+  // TODO: handle disabling placement of superwild in new sets
+  return cardIsPlaceable(type) && cardIsNotOnlySetMember(numMembers);
+}
+
 function cardIsPlayable(type) {
   return type !== "energy" && cardIsStorable(type);
 }
 
 function cardIsFlippable(type, numMembers, altColour) {
-  // numMembers equality negation handles undefined
-  return type === "wild" && !(numMembers > 1) && altColour;
+  return type === "wild" && cardIsNotOnlySetMember(numMembers) && altColour;
 }
 
 function Card({
@@ -114,8 +122,7 @@ function Card({
   const popover = (
     <Popover>
       <Popover.Content className={styles.actionPopover}>
-        {cardIsPlaceable(type) && (
-          /* TODO: handle superwild new placement */
+        {cardIsPlaceableInNew(type, numMembers) && (
           <Button onClick={() => placeCard(id)}>Place in New</Button>
         )}
         {placeSetEls}
