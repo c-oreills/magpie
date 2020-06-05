@@ -1,16 +1,24 @@
 import io from "socket.io-client";
 
 import store from "./app/store";
-import { updateBoards, updateHand, updateLog, updatePlayers, updatePlayerId } from "./features/board/boardsSlice";
+import {
+  updateActivePlayerTab,
+  updateBoards,
+  updateHand,
+  updateLog,
+  updatePlayers,
+  updatePlayerId,
+} from "./features/board/boardsSlice";
 
 var socket;
 
 function socketConnect(e) {
   let urlParams = new URLSearchParams(window.location.search);
-  let pid = urlParams.get('p');
+  let pid = urlParams.get("p");
   if (pid) {
     socket.emit("register", Number(pid));
     store.dispatch(updatePlayerId(pid));
+    store.dispatch(updateActivePlayerTab(pid));
   }
 }
 

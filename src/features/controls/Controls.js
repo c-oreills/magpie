@@ -30,11 +30,14 @@ export function SelectorBar() {
   let game = useSelector(selectGame);
 
   let playerEls = game.players.map((p, i) => (
-    <Tab key={i} eventKey={i} title={i == game.playerId ? "You" : p} />
+    <Tab key={i} eventKey={i} title={i === game.playerId ? "You" : p} />
   ));
 
   return (
-    <Tabs onSelect={(k) => dispatch(updateActivePlayerTab(k))}>
+    <Tabs
+      activeKey={game.activePlayerTab}
+      onSelect={(k) => dispatch(updateActivePlayerTab(k))}
+    >
       {playerEls}
     </Tabs>
   );

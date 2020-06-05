@@ -353,6 +353,9 @@ export function Board() {
   let game = useSelector(selectGame);
   let board = useSelector(selectBoard(game.activePlayerTab));
   let playerBoard = useSelector(selectBoard(game.playerId));
+  if (!board) {
+    return null;
+  }
 
   const findMatchingSets = makeFindMatchingSets(playerBoard);
 

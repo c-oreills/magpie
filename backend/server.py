@@ -55,7 +55,8 @@ def atomic_state_change(fn):
 def only_on_turn(fn):
     @wraps(fn)
     def inner(player_id, *a, **k):
-        assert game_state['playerTurn'] == player_id, 'Tried to perform action out of turn'
+        assert game_state[
+            'playerTurn'] == player_id, 'Tried to perform action out of turn'
         return fn(player_id, *a, **k)
 
     return inner
@@ -166,7 +167,10 @@ def game_state_for_player(player_id):
 
     # Don't send other hands to player
     hands = gs.pop('hands')
-    gs['hand'] = hands[player_id]
+    if player_id is not None:
+        gs['hand'] = hands[player_id]
+    else:
+        gs['hand'] = []
 
     # Don't send deck to player
     del gs['deck']
@@ -249,7 +253,9 @@ def end_turn(player_id):
     game_state['playerTurn'] += 1
     game_state['playerTurn'] %= len(game_state['players'])
     game_state['log'].append(
-        f'{_get_player_name(player_id)} is done, now for {_get_player_name(game_state["playerTurn"])}')
+        f'{_get_player_name(player_id)} is done, now for {_get_player_name(game_state["playerTurn"])}'
+    )
+
 
 def _flip_card(card, error_on_superwild=True):
     if _is_superwild(card):
@@ -346,6 +352,13 @@ def give_card(player_id, card_id, to_player_id):
 def restart_game(player_id):
     assert player_id == 0, "Only player0 can restart game"
     init_game_state(game_state['players'])
+
+
+@socketio.on('connect')
+def handle_connect():
+    socketio.emit('server_state_update',
+                  game_state_for_player(None),
+                  room=request.sid)
 
 
 @socketio.on('register')
