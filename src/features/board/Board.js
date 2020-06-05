@@ -115,6 +115,7 @@ function Card({
     <Popover>
       <Popover.Content className={styles.actionPopover}>
         {cardIsPlaceable(type) && (
+          /* TODO: handle superwild new placement */
           <Button onClick={() => placeCard(id)}>Place in New</Button>
         )}
         {placeSetEls}
