@@ -69,9 +69,12 @@ def _calc_set_id(set_):
     return min(c['id'] for c in set_['members'])
 
 
+def _is_superwild(card):
+    return len(card['sets']) > 2
+
+
 def _create_set_from_card(card):
-    assert not card['id'].startswith(
-        'c_wsuper_'), 'Cannot create sets from superwild cards'
+    assert not _is_superwild(card), 'Cannot create sets from superwildcards'
     set_id = card['id']
     return {
         'id': set_id,
@@ -218,7 +221,7 @@ def draw_cards(player_id):
 
 
 def _flip_card(card, error_on_superwild=True):
-    if len(card['sets']) > 2:
+    if _is_superwild(card):
         if error_on_superwild:
             assert False, 'Cannot flip superwildcards'
         else:
