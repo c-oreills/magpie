@@ -342,6 +342,12 @@ def give_card(player_id, card_id, to_player_id):
     )
 
 
+@atomic_state_change
+def restart_game(player_id):
+    assert player_id == 0, "Only player0 can restart game"
+    init_game_state(game_state['players'])
+
+
 @socketio.on('register')
 def handle_register(player_id):
     sids_to_players[request.sid] = player_id
@@ -406,6 +412,13 @@ def handle_store(card_id):
 def handle_give(card_id, to_player_id):
     player_id = sids_to_players[request.sid]
     give_card(player_id, card_id, to_player_id)
+    broadcast_state_to_players()
+
+
+@socketio.on('restart')
+def handle_restart():
+    player_id = sids_to_players[request.sid]
+    restart_game(player_id)
     broadcast_state_to_players()
 
 

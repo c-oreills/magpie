@@ -12,3 +12,8 @@
   max-height: 8em;
   overflow: scroll;
 }
+
+.settings {
+  position: absolute;
+  right: 0;
+}

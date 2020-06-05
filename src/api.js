@@ -49,6 +49,10 @@ export function storeCard(cardId) {
   socket.emit("store", cardId);
 }
 
+export function restartGame(cardId) {
+  socket.emit("restart");
+}
+
 export default function initSocket() {
   socket = io(`http://${window.location.hostname}:5000`);
   socket.on("connect", socketConnect);

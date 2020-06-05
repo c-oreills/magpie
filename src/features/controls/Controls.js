@@ -1,10 +1,12 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { useDispatch, useSelector } from "react-redux";
 
-import { drawCards, endTurn } from "../../api.js";
+import { drawCards, endTurn, restartGame } from "../../api.js";
 
 import { selectGame, updateActivePlayerTab } from "../board/boardsSlice";
 
@@ -16,7 +18,9 @@ export function ActionBar() {
       <Button variant="success" onClick={drawCards}>
         Draw
       </Button>
-      <Button variant="danger" onClick={endTurn}>Done</Button>
+      <Button variant="danger" onClick={endTurn}>
+        Done
+      </Button>
     </div>
   );
 }
@@ -33,6 +37,26 @@ export function SelectorBar() {
     <Tabs onSelect={(k) => dispatch(updateActivePlayerTab(k))}>
       {playerEls}
     </Tabs>
+  );
+}
+
+export function SettingMenu() {
+  const popover = (
+    <Popover>
+      <Popover.Content>
+        <Button onClick={() => restartGame()}>Restart</Button>
+      </Popover.Content>
+    </Popover>
+  );
+  return (
+    <OverlayTrigger
+      trigger="click"
+      rootClose={true}
+      placement="bottom"
+      overlay={popover}
+    >
+      <div className={styles.settings}>⚙️</div>
+    </OverlayTrigger>
   );
 }
 
