@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import store from "./app/store";
 import {
   updateActivePlayerTab,
+  updateAlert,
   updateBoards,
   updateHand,
   updateLog,
@@ -27,6 +28,10 @@ function socketServerStateUpdate(m) {
   store.dispatch(updateHand(m.hand));
   store.dispatch(updatePlayers(m.players));
   store.dispatch(updateLog(m.log));
+}
+
+function socketAlert(m) {
+  store.dispatch(updateAlert(m));
 }
 
 export function drawCards() {
@@ -65,4 +70,5 @@ export default function initSocket() {
   socket = io(`http://${window.location.hostname}:5000`);
   socket.on("connect", socketConnect);
   socket.on("server_state_update", socketServerStateUpdate);
+  socket.on("alert", socketAlert);
 }

@@ -45,6 +45,9 @@ export const gameSlice = createSlice({
     updateActivePlayerTab: (state, action) => {
       state.activePlayerTab = action.payload;
     },
+    updateAlert: (state, action) => {
+      state.alert = action.payload;
+    },
     updateLog: (state, action) => {
       state.log = action.payload;
     },
@@ -57,6 +60,12 @@ export const gameSlice = createSlice({
   },
 });
 
-export const { updateActivePlayerTab, updateLog, updatePlayers, updatePlayerId } = gameSlice.actions;
-export const selectGame = state => state.game;
+export const {
+  updateAlert,
+  updateActivePlayerTab,
+  updateLog,
+  updatePlayers,
+  updatePlayerId,
+} = gameSlice.actions;
+export const selectGame = (state) => state.game;
 export const gameReducer = gameSlice.reducer;

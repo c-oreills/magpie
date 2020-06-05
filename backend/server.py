@@ -34,6 +34,15 @@ def load_game_state():
         return pickle.load(f)
 
 
+def send_alert_to_user(alert):
+    socketio.emit('alert', alert, room=request.sid)
+
+
+class UserVisibleError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+
 def atomic_state_change(fn):
     @wraps(fn)
     def inner(*a, **k):
@@ -41,9 +50,11 @@ def atomic_state_change(fn):
         with game_lock:
             try:
                 ret = fn(*a, **k)
-            except:
+            except Exception as e:
                 # Refresh game state from disk so it's not corrupted
                 game_state = load_game_state()
+                if isinstance(e, UserVisibleError):
+                    send_alert_to_user(e.msg)
                 raise
             else:
                 dump_game_state()
@@ -55,8 +66,8 @@ def atomic_state_change(fn):
 def only_on_turn(fn):
     @wraps(fn)
     def inner(player_id, *a, **k):
-        assert game_state[
-            'playerTurn'] == player_id, 'Tried to perform action out of turn'
+        if game_state['playerTurn'] != player_id:
+            raise UserVisibleError('Tried to perform action out of turn')
         return fn(player_id, *a, **k)
 
     return inner
@@ -87,7 +98,8 @@ def _is_superwild(card):
 
 
 def _create_set_from_card(card):
-    assert not _is_superwild(card), 'Cannot create sets from superwildcards'
+    if _is_superwild(card):
+        raise UserVisibleError('Cannot create sets from superwildcards')
     set_id = card['id']
     return {
         'id': set_id,
@@ -218,7 +230,8 @@ def _remove_card_from_loc(player_id, loc_type, loc, card):
     if loc['members']:
         loc['id'] = _calc_set_id(loc)
     else:
-        assert not loc['enhancers'], 'Must remove enhancers first'
+        if loc['enhancers']:
+            raise UserVisibleError('Must remove enhancers first')
         # Delete set
         game_state['boards'][player_id]['sets'].remove(loc)
 
@@ -350,7 +363,8 @@ def give_card(player_id, card_id, to_player_id):
 
 @atomic_state_change
 def restart_game(player_id):
-    assert player_id == 0, "Only player0 can restart game"
+    if player_id != 0:
+        raise UserVisibleError("Only first player can restart game")
     init_game_state(game_state['players'])
 
 

@@ -1,14 +1,20 @@
 import React from "react";
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { useDispatch, useSelector } from "react-redux";
+import Toast from "react-bootstrap/Toast";
+import { useDispatch, useSelector, useState } from "react-redux";
 
 import { drawCards, endTurn, restartGame } from "../../api.js";
 
-import { selectGame, updateActivePlayerTab } from "../board/boardsSlice";
+import {
+  selectGame,
+  updateAlert,
+  updateActivePlayerTab,
+} from "../board/boardsSlice";
 
 import styles from "./Controls.module.css";
 
@@ -70,4 +76,22 @@ export function Log() {
   logEls.reverse();
 
   return <ul className={styles.log}>{logEls}</ul>;
+}
+
+export function AlertBox() {
+  const dispatch = useDispatch();
+  const game = useSelector(selectGame);
+
+  if (!game.alert) {
+    return null;
+  }
+  return (
+    <Alert
+      variant="danger"
+      onClose={() => dispatch(updateAlert(null))}
+      dismissible
+    >
+      {game.alert}
+    </Alert>
+  );
 }
