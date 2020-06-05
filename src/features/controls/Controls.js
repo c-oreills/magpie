@@ -27,7 +27,7 @@ export function SelectorBar() {
   let game = useSelector(selectGame);
 
   let playerEls = game.players.map((p, i) => (
-    <Tab key={i} eventKey={i} title={p} />
+    <Tab key={i} eventKey={i} title={i == game.playerId ? "You" : p} />
   ));
 
   return (

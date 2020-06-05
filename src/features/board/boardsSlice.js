@@ -52,7 +52,7 @@ export const gameSlice = createSlice({
       state.players = action.payload;
     },
     updatePlayerId: (state, action) => {
-      state.playerId = action.payload;
+      state.playerId = Number(action.payload);
     },
   },
 });

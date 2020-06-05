@@ -7,9 +7,11 @@ var socket;
 
 function socketConnect(e) {
   let urlParams = new URLSearchParams(window.location.search);
-  let pid = Number(urlParams.get('p')) || 0;
-  socket.emit("register", pid);
-  store.dispatch(updatePlayerId(pid));
+  let pid = urlParams.get('p');
+  if (pid) {
+    socket.emit("register", Number(pid));
+    store.dispatch(updatePlayerId(pid));
+  }
 }
 
 function socketServerStateUpdate(m) {
