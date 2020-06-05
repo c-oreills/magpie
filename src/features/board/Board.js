@@ -83,25 +83,33 @@ function cardIsSuperwild(type, colours) {
   return type === "wild" && colours.length > 2;
 }
 
+function cardIsMember(type) {
+  return ["member", "wild"].includes(type);
+}
+
+function cardIsEnhancer(type) {
+  return ["enhance_primary", "enhance_secondary"].includes(type);
+}
+
 function cardIsOnlySetMember(numMembers) {
   return numMembers === 1;
 }
 
 function cardIsStorable(type) {
-  return !["member", "wild"].includes(type);
+  return !cardIsMember(type);
 }
 
 function cardIsPlaceable(type) {
-  return ["member", "wild", "enhancer"].includes(type);
+  return cardIsMember(type) || cardIsEnhancer(type);
 }
 
 function cardIsPlaceableInNew(type, numMembers) {
   // TODO: handle disabling placement of superwild in new sets
-  return cardIsPlaceable(type) && !cardIsOnlySetMember(numMembers);
+  return cardIsMember(type) && !cardIsOnlySetMember(numMembers);
 }
 
 function cardIsPlayable(type) {
-  return type !== "energy" && cardIsStorable(type);
+  return type !== "energy" && !cardIsPlaceable(type);
 }
 
 function cardIsFlippable(type, numMembers, colours) {
@@ -283,7 +291,15 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
     />
   ));
   let enhancerEls = enhancers.map((e) => (
-    <Card name={e.name || e.type} colours={e.colours} energy={e.energy} />
+    <Card
+      key={e.id}
+      id={e.id}
+      type={e.type}
+      name={e.name}
+      location="set"
+      colours={e.colours}
+      energy={e.energy}
+    />
   ));
   return (
     <div className={`${styles.set} ${isComplete ? styles.complete : ""}`}>
@@ -340,14 +356,25 @@ function setCharge(set) {
   return set.charges[set.charges.length - 1];
 }
 
+function setIsComplete(set) {
+  return set.members.length === set.charges.length;
+}
+
 function makeFindMatchingSets(board) {
   return function findMatchingSets(card) {
-    if (!card.sets) {
+    if (card.sets) {
+      return board.sets.filter(
+        (s) => card.sets.includes(s.set) && !s.members.includes(card)
+      );
+    } else if (card.type === "enhance_primary") {
+      return board.sets.filter((s) => setIsComplete(s) && !s.enhancers.length);
+    } else if (card.type === "enhance_secondary") {
+      return board.sets.filter(
+        (s) => setIsComplete(s) && s.enhancers.length === 1
+      );
+    } else {
       return [];
     }
-    return board.sets.filter(
-      (s) => card.sets.includes(s.set) && !s.members.includes(card)
-    );
   };
 }
 

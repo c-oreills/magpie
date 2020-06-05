@@ -97,6 +97,10 @@ def _is_superwild(card):
     return len(card['sets']) > 2
 
 
+def _is_enhancer(card):
+    return card['type'] in ['enhance_primary', 'enhance_secondary']
+
+
 def _create_set_from_card(card):
     if _is_superwild(card):
         raise UserVisibleError('Cannot create sets from superwildcards')
@@ -202,9 +206,10 @@ def _find_card_loc(player_id, card_id):
             return card
 
     for s in sets:
-        card = _check_card_in_list(s['members'])
-        if card:
-            return ('set', s, card)
+        for l in (s['members'], s['enhancers']):
+            card = _check_card_in_list(l)
+            if card:
+                return ('set', s, card)
 
     card = _check_card_in_list(hand)
     if card:
@@ -222,7 +227,7 @@ def _remove_card_from_loc(player_id, loc_type, loc, card):
         loc.remove(card)
         return
 
-    if card['type'] == 'enhancer':
+    if _is_enhancer(card):
         loc['enhancers'].remove(card)
         return
 
@@ -322,13 +327,15 @@ def place_card(player_id, card_id, set_id):
     if set_id is None:
         sets.append(_create_set_from_card(card))
     else:
-        # TODO handle enhancers
         set_, = [s for s in sets if s['id'] == set_id]
 
         if card['type'] == 'wild' and card['sets'][0] != set_['set']:
             _flip_card(card, error_on_superwild=False)
 
-        set_['members'].append(card)
+        if _is_enhancer(card):
+            set_['enhancers'].append(card)
+        else:
+            set_['members'].append(card)
     game_state['log'].append(
         f'{_get_player_name(player_id)} placed {card["name"]}')
 
@@ -353,7 +360,7 @@ def give_card(player_id, card_id, to_player_id):
 
     to_player_board = game_state['boards'][to_player_id]
     # Enhancers should go straight to other players' store when not giving as part of a set
-    if loc_type == 'store' or card['type'] == 'enhancer':
+    if loc_type == 'store' or _is_enhancer(card):
         to_player_board['store'].append(card)
     else:
         to_player_board['sets'].append(_create_set_from_card(card))
