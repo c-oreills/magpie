@@ -99,6 +99,7 @@ function Card({
   matchingSets,
   numMembers,
   lightText,
+  altColour,
 }) {
   const placeSetEls =
     matchingSets &&
@@ -138,7 +139,10 @@ function Card({
     >
       <div className={styles.card} style={{ backgroundColor: colour }}>
         <div className={styles.cardHeader}>
-          <Energy energy={energy}/>
+          <Energy energy={energy} />
+          {altColour && (
+            <div className={styles.altColour} style={{ backgroundColor: altColour }}><br /></div>
+          )}
           <span className={lightText && styles.lightText}>{name}</span>
         </div>
         {charges && (
@@ -190,6 +194,7 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
       matchingSets={findMatchingSets(m)}
       numMembers={members.length}
       lightText={m.lightText}
+      altColour={m.altColour}
     />
   ));
   let enhancerEls = enhancers.map((e) => (
@@ -287,6 +292,7 @@ export function Hand() {
       charges={c.charges}
       matchingSets={findMatchingSets(c)}
       lightText={c.lightText}
+      altColour={c.altColour}
     />
   ));
   return <div className={styles.hand}>{handEls}</div>;

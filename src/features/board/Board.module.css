@@ -72,6 +72,10 @@
   clear: both;
 }
 
+.altColour {
+  width: 1.5em;
+}
+
 .energy {
   width: 1.5em;
   text-align: center;
@@ -98,15 +102,18 @@
   background-color: #99ccaa;
 }
 
-.cardHeader > .energy {
+.cardHeader > .energy, .cardHeader > .altColour {
   /* Allow to stack on top of header text */
   position: relative;
   float: right;
+  margin: 0;
+}
+
+.cardHeader > .energy {
   /* Drop all but left border */
   border: none;
   border-left: 1px solid grey;
   border-bottom: 1px solid grey;
-  margin: 0;
 }
 
 .charges {

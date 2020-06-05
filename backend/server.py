@@ -105,12 +105,17 @@ def init_game_state(num_players):
             card.setdefault('name', card['id'])
 
             if card['type'] == 'wild':
-                first_set, = [s for s in sets if s['id'] == card['sets'][0]]
-                alt_set, = [s for s in sets if s['id'] == card['sets'][1]]
-                card['charges'] = first_set['charges']
-                card['alt_charges'] = alt_set['charges']
-                # TODO: implement alternative colours for wilds
-                card['alt_colour'] = 'cornflowerblue'
+                card['name'] = 'Wild Bird'
+                if len(card['sets']) == 2:
+                    first_set, = [s for s in sets if s['id'] == card['sets'][0]]
+                    alt_set, = [s for s in sets if s['id'] == card['sets'][1]]
+                    card['charges'] = first_set['charges']
+                    card['colour'] = first_set['colour']
+                    card['altCharges'] = alt_set['charges']
+                    card['altColour'] = alt_set['colour']
+                else:
+                    card['colour'] = first_set['colour']
+                    card['altColour'] = 'rainbow'
             deck.append(card)
 
     shuffle(deck)
