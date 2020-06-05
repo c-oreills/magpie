@@ -4,8 +4,8 @@ export const boardsSlice = createSlice({
   name: "boards",
   initialState: {
     // TODO: handle configurable number of players
-    0: {sets: [], store: []},
-    1: {sets: [], store: []},
+    0: { sets: [], store: [] },
+    1: { sets: [], store: [] },
   },
   reducers: {
     updateBoards: (state, action) => {
@@ -15,7 +15,7 @@ export const boardsSlice = createSlice({
 });
 
 export const { updateBoards } = boardsSlice.actions;
-export const selectBoard = playerId => state => state.boards[playerId];
+export const selectBoard = (playerId) => (state) => state.boards[playerId];
 export const boardsReducer = boardsSlice.reducer;
 
 export const handSlice = createSlice({
@@ -29,7 +29,7 @@ export const handSlice = createSlice({
 });
 
 export const { updateHand } = handSlice.actions;
-export const selectHand = state => state.hand;
+export const selectHand = (state) => state.hand;
 export const handReducer = handSlice.reducer;
 
 export const gameSlice = createSlice({
