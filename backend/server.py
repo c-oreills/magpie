@@ -119,6 +119,11 @@ def init_game_state(num_players):
                 else:
                     card['colour'] = first_set['colour']
                     card['altColour'] = 'rainbow'
+            elif card['type'] == 'charge':
+                card['name'] = 'Feed'
+                card['chargeColours'] = [s['colour'] for s in sets if s['id'] in card['sets']]
+            elif card['type'] == 'energy':
+                card['name'] = 'Seeds'
             deck.append(card)
 
     shuffle(deck)

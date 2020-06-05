@@ -183,6 +183,7 @@ function Card({
   numMembers,
   lightText,
   altColour,
+  chargeColours,
 }) {
   const popover = (
     <Popover>
@@ -197,6 +198,18 @@ function Card({
     </Popover>
   );
 
+  let altColours = [];
+  if (altColour) {
+    altColours = [altColour];
+  } else if (chargeColours) {
+    altColours = chargeColours;
+  }
+  const altColourEls = altColours.map((c) => (
+    <div key={c} className={styles.altColour} style={{ backgroundColor: c }}>
+      <br />
+    </div>
+  ));
+
   return (
     <OverlayTrigger
       trigger="click"
@@ -207,14 +220,7 @@ function Card({
       <div className={styles.card} style={{ backgroundColor: colour }}>
         <div className={styles.cardHeader}>
           <Energy energy={energy} />
-          {altColour && (
-            <div
-              className={styles.altColour}
-              style={{ backgroundColor: altColour }}
-            >
-              <br />
-            </div>
-          )}
+          {altColourEls.length > 0 && <div className={styles.altColours}>{altColourEls}</div>}
           <span className={lightText && styles.lightText}>{name}</span>
         </div>
         {charges && (
@@ -268,6 +274,7 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
       numMembers={members.length}
       lightText={m.lightText}
       altColour={m.altColour}
+      chargeColours={m.chargeColours}
     />
   ));
   let enhancerEls = enhancers.map((e) => (
@@ -391,6 +398,7 @@ export function Hand() {
       matchingSets={findMatchingSets(c)}
       lightText={c.lightText}
       altColour={c.altColour}
+      chargeColours={c.chargeColours}
     />
   ));
   return <div className={styles.hand}>{handEls}</div>;

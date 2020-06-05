@@ -63,7 +63,7 @@
   }, {
     "id": "s_y",
     "charges": [1, 2],
-    "colour": "white",
+    "colour": "grey",
     "energy": 2,
     "enhanceable": false,
     "names": ["Butterfly", "Dragonfly"]
@@ -194,51 +194,61 @@
     }, {
       "id": "c_ass",
       "type": "steal_set",
+      "name": "Magpie",
       "count": 2,
       "energy": 5
     }, {
       "id": "c_asm",
       "type": "steal_member",
+      "name": "Talon Snatch",
       "count": 3,
       "energy": 3
     }, {
       "id": "c_as",
       "type": "swap",
+      "name": "Cuckoo's Child",
       "count": 3,
       "energy": 3
     }, {
       "id": "c_adc",
       "type": "double_charge",
+      "name": "Double Food",
       "count": 2,
       "energy": 1
     }, {
       "id": "c_acs",
       "type": "charge_single",
+      "name": "Fatball",
       "count": 3,
       "energy": 3
     }, {
       "id": "c_aca",
       "type": "charge_all",
+      "name": "Bird Table",
       "count": 3,
       "energy": 2
     }, {
       "id": "c_an",
       "type": "negate",
+      "name": "Fly Away",
       "count": 3,
       "energy": 4
     }, {
       "id": "c_ad",
       "type": "draw",
+      "name": "Binoculars",
       "count": 10,
       "energy": 1
     }, {
       "id": "c_np",
       "type": "enhance_primary",
+      "name": "Nest",
       "count": 3,
       "energy": 3
     }, {
       "id": "c_ns",
       "type": "enhance_secondary",
+      "name": "Egg",
       "count": 3,
       "energy": 4
     }

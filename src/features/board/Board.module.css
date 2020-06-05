@@ -72,8 +72,15 @@
   clear: both;
 }
 
-.altColour {
+.altColours {
   width: 1.5em;
+  display: flex;
+  align-items: stretch;
+}
+
+.altColour {
+  display: inline-block;
+  flex: 1;
 }
 
 .energy {
@@ -102,7 +109,7 @@
   background-color: #99ccaa;
 }
 
-.cardHeader > .energy, .cardHeader > .altColour {
+.cardHeader > .energy, .cardHeader > .altColours {
   /* Allow to stack on top of header text */
   position: relative;
   float: right;
