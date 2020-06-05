@@ -171,12 +171,22 @@ def _find_card_loc(player_id, card_id):
     assert False, 'Card was not found in any location'
 
 
-def _remove_card_from_loc(loc_type, loc, card):
-    if loc_type == 'set':
-        loc['members'].remove(card)
+def _remove_card_from_loc(player_id, loc_type, loc, card):
+    if loc_type != 'set':
+        loc.remove(card)
+        return
+
+    if card['type'] == 'enhancer':
+        loc['enhancers'].remove(card)
+        return
+
+    loc['members'].remove(card)
+    if loc['members']:
         loc['id'] = _calc_set_id(loc)
     else:
-        loc.remove(card)
+        assert not loc['enhancers'], 'Must remove enhancers first'
+        # Delete set
+        game_state['boards'][player_id]['sets'].remove(loc)
 
 
 def _get_player_name(player_id):
@@ -206,7 +216,7 @@ def draw_cards(player_id):
 def play_card(player_id, card_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
     assert loc_type == 'hand', "Card not in hand"
-    _remove_card_from_loc(loc_type, loc, card)
+    _remove_card_from_loc(player_id, loc_type, loc, card)
     game_state['discard'].append(card)
     game_state['log'].append(
         f'{_get_player_name(player_id)} played {card["name"]}')
@@ -216,7 +226,7 @@ def play_card(player_id, card_id):
 def place_card(player_id, card_id, set_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
     assert loc_type != 'store', "Can't place card from store"
-    _remove_card_from_loc(loc_type, loc, card)
+    _remove_card_from_loc(player_id, loc_type, loc, card)
 
     sets = game_state['boards'][player_id]['sets']
     if set_id is None:
@@ -232,7 +242,7 @@ def place_card(player_id, card_id, set_id):
 @atomic_state_change
 def store_card(player_id, card_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
-    _remove_card_from_loc(loc_type, loc, card)
+    _remove_card_from_loc(player_id, loc_type, loc, card)
     game_state['boards'][player_id]['store'].append(card)
     game_state['log'].append(
         f'{_get_player_name(player_id)} stored {card["name"]}')
