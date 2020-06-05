@@ -16,7 +16,6 @@ export function ActionBar() {
       <Button variant="success" onClick={drawCards}>
         Draw
       </Button>
-      <Button variant="primary">Give</Button>
       <Button variant="danger" onClick={endTurn}>Done</Button>
     </div>
   );
