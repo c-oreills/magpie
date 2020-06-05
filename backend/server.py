@@ -3,6 +3,7 @@ from json import load
 import pickle
 from random import shuffle
 import sys
+from threading import Lock
 
 from flask import Flask, render_template, request
 from flask_cors import CORS
@@ -16,6 +17,7 @@ app.config['DEBUG'] = True
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+game_lock = Lock()
 sids_to_players = {}
 game_state = None
 
@@ -36,15 +38,16 @@ def atomic_state_change(fn):
     @wraps(fn)
     def inner(*a, **k):
         global game_state
-        try:
-            ret = fn(*a, **k)
-        except:
-            # Refresh game state from disk so it's not corrupted
-            game_state = load_game_state()
-            raise
-        else:
-            dump_game_state()
-            return ret
+        with game_lock:
+            try:
+                ret = fn(*a, **k)
+            except:
+                # Refresh game state from disk so it's not corrupted
+                game_state = load_game_state()
+                raise
+            else:
+                dump_game_state()
+                return ret
 
     return inner
 
