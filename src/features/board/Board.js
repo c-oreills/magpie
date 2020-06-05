@@ -85,8 +85,9 @@ function cardIsPlayable(type) {
   return type !== "energy" && cardIsStorable(type);
 }
 
-function cardIsFlippable(type, altCharges) {
-  return type === "wild" && altCharges;
+function cardIsFlippable(type, numMembers, altColour) {
+  // numMembers equality negation handles undefined
+  return type === "wild" && !(numMembers > 1) && altColour;
 }
 
 function Card({
@@ -117,7 +118,7 @@ function Card({
           <Button onClick={() => placeCard(id)}>Place in New</Button>
         )}
         {placeSetEls}
-        {cardIsFlippable(type) && (
+        {cardIsFlippable(type, numMembers, altColour) && (
           <Button onClick={() => flipCard(id)}>Flip</Button>
         )}
         {cardIsPlayable(type) && (

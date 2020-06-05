@@ -217,6 +217,34 @@ def draw_cards(player_id):
         f'{_get_player_name(player_id)} drew {num_cards} cards')
 
 
+def _flip_card(card, error_on_superwild=True):
+    if len(card['sets']) > 2:
+        if error_on_superwild:
+            assert False, 'Cannot flip superwildcards'
+        else:
+            return
+
+    card['colour'], card['altColour'] = card['altColour'], card['colour']
+    card['charges'], card['altCharges'] = card['altCharges'], card['charges']
+    card['sets'].reverse()
+
+
+@atomic_state_change
+def flip_card(player_id, card_id):
+    loc_type, loc, card = _find_card_loc(player_id, card_id)
+
+    if loc_type == 'set':
+        assert len(loc['members']
+                   ) == 1, 'Cannot flip wildcards with other cards in set'
+        loc['charges'] = card['altCharges']
+        loc['set'] = card['sets'][1]
+
+    _flip_card(card)
+
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} flipped {card["name"]}')
+
+
 @atomic_state_change
 def play_card(player_id, card_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
@@ -239,6 +267,10 @@ def place_card(player_id, card_id, set_id):
     else:
         # TODO handle enhancers
         set_, = [s for s in sets if s['id'] == set_id]
+
+        if card['type'] == 'wild' and card['sets'][0] != set_['set']:
+            _flip_card(card, error_on_superwild=False)
+
         set_['members'].append(card)
     game_state['log'].append(
         f'{_get_player_name(player_id)} placed {card["name"]}')
@@ -286,7 +318,6 @@ def handle_draw():
 @socketio.on('flip')
 def handle_flip(card_id):
     player_id = sids_to_players[request.sid]
-    # TODO: implement me
     flip_card(player_id, card_id)
     broadcast_state_to_players()
 
