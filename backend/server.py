@@ -49,6 +49,15 @@ def atomic_state_change(fn):
     return inner
 
 
+def only_on_turn(fn):
+    @wraps(fn)
+    def inner(player_id, *a, **k):
+        assert game_state['playerTurn'] == player_id, 'Tried to perform action out of turn'
+        return fn(player_id, *a, **k)
+
+    return inner
+
+
 def broadcast_state_to_players():
     for sid, player_id in sids_to_players.items():
         socketio.emit('server_state_update',
@@ -140,6 +149,7 @@ def init_game_state(players):
     game_state = {
         'sets': sets,
         'players': players,
+        'playerTurn': 0,
         'boards': boards,
         'hands': hands,
         'deck': deck,
@@ -211,6 +221,7 @@ def _get_player_name(player_id):
 
 
 @atomic_state_change
+@only_on_turn
 def draw_cards(player_id):
     deck = game_state['deck']
     hand = game_state['hands'][player_id]
@@ -228,6 +239,14 @@ def draw_cards(player_id):
     game_state['log'].append(
         f'{_get_player_name(player_id)} drew {num_cards} cards')
 
+
+@atomic_state_change
+@only_on_turn
+def end_turn(player_id):
+    game_state['playerTurn'] += 1
+    game_state['playerTurn'] %= len(game_state['players'])
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} is done, now for {_get_player_name(game_state["playerTurn"])}')
 
 def _flip_card(card, error_on_superwild=True):
     if _is_superwild(card):
@@ -269,6 +288,7 @@ def play_card(player_id, card_id):
 
 
 @atomic_state_change
+@only_on_turn
 def place_card(player_id, card_id, set_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
     assert loc_type != 'store', "Can't place card from store"
@@ -290,6 +310,7 @@ def place_card(player_id, card_id, set_id):
 
 
 @atomic_state_change
+@only_on_turn
 def store_card(player_id, card_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
     _remove_card_from_loc(player_id, loc_type, loc, card)
@@ -341,6 +362,13 @@ def handle_draw():
     socketio.emit('server_state_update',
                   game_state_for_player(player_id),
                   room=request.sid)
+
+
+@socketio.on('end')
+def handle_end():
+    player_id = sids_to_players[request.sid]
+    end_turn(player_id)
+    broadcast_state_to_players()
 
 
 @socketio.on('flip')

@@ -25,6 +25,10 @@ export function drawCards() {
   socket.emit("draw");
 }
 
+export function endTurn() {
+  socket.emit("end");
+}
+
 export function giveCard(cardId, toPlayerId) {
   socket.emit("give", cardId, toPlayerId);
 }

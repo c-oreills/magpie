@@ -4,7 +4,7 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { useDispatch, useSelector } from "react-redux";
 
-import { drawCards } from "../../api.js";
+import { drawCards, endTurn } from "../../api.js";
 
 import { selectGame, updateActivePlayerTab } from "../board/boardsSlice";
 
@@ -17,7 +17,7 @@ export function ActionBar() {
         Draw
       </Button>
       <Button variant="primary">Give</Button>
-      <Button variant="danger">Done</Button>
+      <Button variant="danger" onClick={endTurn}>Done</Button>
     </div>
   );
 }
