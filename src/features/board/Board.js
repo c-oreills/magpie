@@ -138,7 +138,7 @@ function Card({
     >
       <div className={styles.card} style={{ backgroundColor: colour }}>
         <div className={styles.cardHeader}>
-          <div className={styles.energy}>{energy}</div>
+          <Energy energy={energy}/>
           <span className={lightText && styles.lightText}>{name}</span>
         </div>
         {charges && (
@@ -203,12 +203,12 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
   );
 }
 
-function StoreItem({ energy }) {
-  return <div className={styles.energy}>{energy}</div>;
+function Energy({ energy }) {
+  return <div className={`${styles.energy} ${styles[energy]}`}>{energy}</div>;
 }
 
 function Store({ items }) {
-  let storeEls = items.map((i) => <StoreItem key={i.id} energy={i.energy} />);
+  let storeEls = items.map((i) => <Energy key={i.id} energy={i.energy} />);
   return (
     <div className={styles.store}>
       <div className={styles.storeHeader}>Store</div>

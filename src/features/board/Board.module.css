@@ -78,7 +78,29 @@
   background-color: white;
 }
 
+.energy.2 {
+  background-color: #1199cc;
+}
+
+.energy.3 {
+  background-color: #cc6622;
+}
+
+.energy.4 {
+  background-color: #9955cc;
+}
+
+.energy.5 {
+  background-color: #ee8877;
+}
+
+.energy.10 {
+  background-color: #99ccaa;
+}
+
 .cardHeader > .energy {
+  /* Allow to stack on top of header text */
+  position: relative;
   float: right;
   /* Drop all but left border */
   border: none;
