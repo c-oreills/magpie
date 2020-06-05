@@ -5,14 +5,14 @@
     "colour": "pink",
     "energy": 1,
     "enhanceable": true,
-    "names": ["Wren", "Longtailed tit"]
+    "names": ["Wren", "Longtail Tit"]
   }, {
     "id": "s_b",
     "charges": [1, 2, 3],
     "colour": "yellow",
     "energy": 1,
     "enhanceable": true,
-    "names": ["Sparrow", "Robin", "Blue tit"]
+    "names": ["Sparrow", "Robin", "Blue Tit"]
   }, {
     "id": "s_c",
     "charges": [1, 2, 4],
@@ -70,11 +70,11 @@
   }, {
     "id": "s_z",
     "charges": [1, 2, 3, 4],
-    "colour": "brown",
+    "colour": "black",
     "energy": 2,
     "enhanceable": false,
     "lightText": true,
-    "names": ["Fox", "Hedgehog", "Badger", "Rabbit"]
+    "names": ["Fox", "Hedgehog", "Squirrel", "Rabbit"]
   }],
   "cards": [
     {
