@@ -302,6 +302,8 @@ def flip_card(player_id, card_id):
 @atomic_state_change
 def play_card(player_id, card_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
+    if game_state['playerTurn'] != player_id and card['type'] != 'negate':
+        raise UserVisibleError("Can't play that card on someone else's turn")
     assert loc_type == 'hand', "Card not in hand"
     _remove_card_from_loc(player_id, loc_type, loc, card)
     game_state['discard'].append(card)
