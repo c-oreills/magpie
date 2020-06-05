@@ -205,13 +205,15 @@ function Card({
     </Popover>
   );
 
-  const headerStyle = colours ? {backgroundColor: colours[0]} : {};
+  const headerStyle = colours ? { backgroundColor: colours[0] } : {};
 
-  const altColourEls = colours && colours.slice(1).map((c) => (
-    <div key={c} className={styles.altColour} style={{ backgroundColor: c }}>
-      <br />
-    </div>
-  ));
+  const altColourEls =
+    colours &&
+    colours.slice(1).map((c) => (
+      <div key={c} className={styles.altColour} style={{ backgroundColor: c }}>
+        <br />
+      </div>
+    ));
 
   return (
     <OverlayTrigger
@@ -220,7 +222,7 @@ function Card({
       placement="bottom"
       overlay={popover}
     >
-      <div className={styles.card} >
+      <div className={styles.card}>
         <div className={styles.cardHeader} style={headerStyle}>
           <Energy energy={energy} />
           {altColourEls && altColourEls.length > 0 && (
