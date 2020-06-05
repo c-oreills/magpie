@@ -40,7 +40,7 @@ export function SelectorBar() {
 export function Log() {
   let game = useSelector(selectGame);
 
-  let logEls = game.log.map((l) => <li>{l}</li>);
+  let logEls = game.log.map((l, i) => <li key={i}>{l}</li>);
   logEls.reverse();
 
   return <ul className={styles.log}>{logEls}</ul>;
