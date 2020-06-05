@@ -95,9 +95,11 @@ def init_game_state(num_players):
     deck = []
     for s in sets:
         c = dict(s, **{'type': 'member', 'sets': [s['id']]})
+        colour = c.pop('colour')
         for n, name in enumerate(s['names']):
             card = _clone_with_id(c, n)
             card['name'] = name
+            card['colours'] = [colour]
             deck.append(card)
 
     for c in cards:
@@ -109,19 +111,22 @@ def init_game_state(num_players):
 
             if card['type'] == 'wild':
                 card['name'] = 'Wild Bird'
+                card['colours'] = [
+                    s['colour'] for s in sets if s['id'] in card['sets']
+                ]
                 if len(card['sets']) == 2:
                     first_set, = [s for s in sets if s['id'] == card['sets'][0]]
                     alt_set, = [s for s in sets if s['id'] == card['sets'][1]]
                     card['charges'] = first_set['charges']
-                    card['colour'] = first_set['colour']
                     card['altCharges'] = alt_set['charges']
-                    card['altColour'] = alt_set['colour']
                 else:
-                    card['colour'] = first_set['colour']
-                    card['altColour'] = 'rainbow'
+                    # Make header background white and display rest as alt colours
+                    card['colours'] = ['white'] + card['colours']
             elif card['type'] == 'charge':
                 card['name'] = 'Feed'
-                card['chargeColours'] = [s['colour'] for s in sets if s['id'] in card['sets']]
+                card['colours'] = ['white'] + [
+                    s['colour'] for s in sets if s['id'] in card['sets']
+                ]
             elif card['type'] == 'energy':
                 card['name'] = 'Seeds'
             deck.append(card)
@@ -232,8 +237,8 @@ def _flip_card(card, error_on_superwild=True):
         else:
             return
 
-    card['colour'], card['altColour'] = card['altColour'], card['colour']
     card['charges'], card['altCharges'] = card['altCharges'], card['charges']
+    card['colours'].reverse()
     card['sets'].reverse()
 
 
@@ -310,7 +315,8 @@ def give_card(player_id, card_id, to_player_id):
         to_player_board['sets'].append(_create_set_from_card(card))
 
     game_state['log'].append(
-        f'{_get_player_name(player_id)} gave {card["name"]} to {_get_player_name(to_player_id)}')
+        f'{_get_player_name(player_id)} gave {card["name"]} to {_get_player_name(to_player_id)}'
+    )
 
 
 @socketio.on('register')

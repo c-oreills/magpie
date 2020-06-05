@@ -79,6 +79,10 @@ var hand = [
   { name: "Item", colour: "cornflowerblue", energy: 4 },
 ];
 
+function cardIsSuperwild(type, colours) {
+  return type === "wild" && colours.length > 2;
+}
+
 function cardIsNotOnlySetMember(numMembers) {
   return !(numMembers === 1);
 }
@@ -100,8 +104,12 @@ function cardIsPlayable(type) {
   return type !== "energy" && cardIsStorable(type);
 }
 
-function cardIsFlippable(type, numMembers, altColour) {
-  return type === "wild" && cardIsNotOnlySetMember(numMembers) && altColour;
+function cardIsFlippable(type, numMembers, colours) {
+  return (
+    type === "wild" &&
+    cardIsNotOnlySetMember(numMembers) &&
+    !cardIsSuperwild(type, colours)
+  );
 }
 
 function cardIsGivable(location) {
@@ -114,7 +122,7 @@ function CardActionPopoverContent({
   location,
   matchingSets,
   numMembers,
-  altColour,
+  colours,
 }) {
   const [isGiving, setIsGiving] = useState(false);
   if (isGiving) {
@@ -136,7 +144,7 @@ function CardActionPopoverContent({
         <Button onClick={() => placeCard(id)}>Place in New</Button>
       )}
       {placeSetEls}
-      {cardIsFlippable(type, numMembers, altColour) && (
+      {cardIsFlippable(type, numMembers, colours) && (
         <Button onClick={() => flipCard(id)}>Flip</Button>
       )}
       {cardIsPlayable(type) && (
@@ -176,15 +184,14 @@ function Card({
   type,
   name,
   location,
-  colour,
+  colours,
   energy,
   charges,
   matchingSets,
   numMembers,
   lightText,
-  altColour,
-  chargeColours,
 }) {
+  // Default background to white
   const popover = (
     <Popover>
       <CardActionPopoverContent
@@ -193,18 +200,14 @@ function Card({
         location={location}
         matchingSets={matchingSets}
         numMembers={numMembers}
-        altColour={altColour}
+        colours={colours}
       />
     </Popover>
   );
 
-  let altColours = [];
-  if (altColour) {
-    altColours = [altColour];
-  } else if (chargeColours) {
-    altColours = chargeColours;
-  }
-  const altColourEls = altColours.map((c) => (
+  const headerStyle = colours ? {backgroundColor: colours[0]} : {};
+
+  const altColourEls = colours && colours.slice(1).map((c) => (
     <div key={c} className={styles.altColour} style={{ backgroundColor: c }}>
       <br />
     </div>
@@ -217,10 +220,12 @@ function Card({
       placement="bottom"
       overlay={popover}
     >
-      <div className={styles.card} style={{ backgroundColor: colour }}>
-        <div className={styles.cardHeader}>
+      <div className={styles.card} >
+        <div className={styles.cardHeader} style={headerStyle}>
           <Energy energy={energy} />
-          {altColourEls.length > 0 && <div className={styles.altColours}>{altColourEls}</div>}
+          {altColourEls && altColourEls.length > 0 && (
+            <div className={styles.altColours}>{altColourEls}</div>
+          )}
           <span className={lightText && styles.lightText}>{name}</span>
         </div>
         {charges && (
@@ -266,19 +271,17 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
       type={m.type}
       name={m.name}
       location="set"
-      colour={m.colour}
+      colours={m.colours}
       energy={m.energy}
       charges={charges}
       sets={m.sets}
       matchingSets={findMatchingSets(m)}
       numMembers={members.length}
       lightText={m.lightText}
-      altColour={m.altColour}
-      chargeColours={m.chargeColours}
     />
   ));
   let enhancerEls = enhancers.map((e) => (
-    <Card name={e.name || e.type} colour={e.colour} energy={e.energy} />
+    <Card name={e.name || e.type} colours={e.colours} energy={e.energy} />
   ));
   return (
     <div className={`${styles.set} ${isComplete ? styles.complete : ""}`}>
@@ -392,13 +395,11 @@ export function Hand() {
       type={c.type}
       name={c.name || c.type}
       location="hand"
-      colour={c.colour}
+      colours={c.colours}
       energy={c.energy}
       charges={c.charges}
       matchingSets={findMatchingSets(c)}
       lightText={c.lightText}
-      altColour={c.altColour}
-      chargeColours={c.chargeColours}
     />
   ));
   return <div className={styles.hand}>{handEls}</div>;
