@@ -192,11 +192,6 @@
       "count": 1,
       "energy": 10
     }, {
-      "id": "c_e10",
-      "type": "energy",
-      "count": 1,
-      "energy": 10
-    }, {
       "id": "c_ass",
       "type": "steal_set",
       "count": 2,
