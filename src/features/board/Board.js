@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 import { useSelector } from "react-redux";
 
-import { flipCard, placeCard, playCard, storeCard } from "../../api.js";
+import {
+  flipCard,
+  giveCard,
+  placeCard,
+  playCard,
+  storeCard,
+} from "../../api.js";
 import { selectBoard, selectGame, selectHand } from "./boardsSlice";
 import styles from "./Board.module.css";
 
@@ -98,18 +104,23 @@ function cardIsFlippable(type, numMembers, altColour) {
   return type === "wild" && cardIsNotOnlySetMember(numMembers) && altColour;
 }
 
-function Card({
+function cardIsGivable(location) {
+  return location !== "hand";
+}
+
+function CardActionPopoverContent({
   id,
   type,
-  name,
-  colour,
-  energy,
-  charges,
+  location,
   matchingSets,
   numMembers,
-  lightText,
   altColour,
 }) {
+  const [isGiving, setIsGiving] = useState(false);
+  if (isGiving) {
+    return <CardGivePopoverContent id={id} />;
+  }
+
   const placeSetEls =
     matchingSets &&
     cardIsPlaceable(type) &&
@@ -119,23 +130,70 @@ function Card({
       </Button>
     ));
 
+  return (
+    <Popover.Content className={styles.actionPopover}>
+      {cardIsPlaceableInNew(type, numMembers) && (
+        <Button onClick={() => placeCard(id)}>Place in New</Button>
+      )}
+      {placeSetEls}
+      {cardIsFlippable(type, numMembers, altColour) && (
+        <Button onClick={() => flipCard(id)}>Flip</Button>
+      )}
+      {cardIsPlayable(type) && (
+        <Button onClick={() => playCard(id)}>Play</Button>
+      )}
+      {cardIsStorable(type) && (
+        <Button onClick={() => storeCard(id)}>Store</Button>
+      )}
+      {cardIsGivable(location) && (
+        <Button onClick={() => setIsGiving(true)}>Give...</Button>
+      )}
+    </Popover.Content>
+  );
+}
+
+function CardGivePopoverContent({ id }) {
+  const { players, playerId } = useSelector(selectGame);
+
+  let playerEls = players
+    .map((p, pId) => (
+      <Button key={pId} onClick={() => giveCard(id, pId)}>
+        {p}
+      </Button>
+    ))
+    .filter((_, pId) => playerId !== pId);
+
+  return (
+    <Popover.Content className={styles.actionPopover}>
+      Give to...
+      {playerEls}
+    </Popover.Content>
+  );
+}
+
+function Card({
+  id,
+  type,
+  name,
+  location,
+  colour,
+  energy,
+  charges,
+  matchingSets,
+  numMembers,
+  lightText,
+  altColour,
+}) {
   const popover = (
     <Popover>
-      <Popover.Content className={styles.actionPopover}>
-        {cardIsPlaceableInNew(type, numMembers) && (
-          <Button onClick={() => placeCard(id)}>Place in New</Button>
-        )}
-        {placeSetEls}
-        {cardIsFlippable(type, numMembers, altColour) && (
-          <Button onClick={() => flipCard(id)}>Flip</Button>
-        )}
-        {cardIsPlayable(type) && (
-          <Button onClick={() => playCard(id)}>Play</Button>
-        )}
-        {cardIsStorable(type) && (
-          <Button onClick={() => storeCard(id)}>Store</Button>
-        )}
-      </Popover.Content>
+      <CardActionPopoverContent
+        id={id}
+        type={type}
+        location={location}
+        matchingSets={matchingSets}
+        numMembers={numMembers}
+        altColour={altColour}
+      />
     </Popover>
   );
 
@@ -150,7 +208,12 @@ function Card({
         <div className={styles.cardHeader}>
           <Energy energy={energy} />
           {altColour && (
-            <div className={styles.altColour} style={{ backgroundColor: altColour }}><br /></div>
+            <div
+              className={styles.altColour}
+              style={{ backgroundColor: altColour }}
+            >
+              <br />
+            </div>
           )}
           <span className={lightText && styles.lightText}>{name}</span>
         </div>
@@ -196,6 +259,7 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
       id={m.id}
       type={m.type}
       name={m.name}
+      location="set"
       colour={m.colour}
       energy={m.energy}
       charges={charges}
@@ -217,12 +281,36 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
   );
 }
 
+function StoreItem({ id, energy }) {
+  const popover = (
+    <Popover>
+      <CardGivePopoverContent id={id} />
+    </Popover>
+  );
+  return (
+    <OverlayTrigger
+      trigger="click"
+      rootClose={true}
+      placement="bottom"
+      overlay={popover}
+    >
+      {/* Need to wrap in div to work around
+      https://github.com/react-bootstrap/react-bootstrap/issues/2208 */}
+      <div>
+        <Energy energy={energy} />
+      </div>
+    </OverlayTrigger>
+  );
+}
+
 function Energy({ energy }) {
   return <div className={`${styles.energy} ${styles[energy]}`}>{energy}</div>;
 }
 
 function Store({ items }) {
-  let storeEls = items.map((i) => <Energy key={i.id} energy={i.energy} />);
+  let storeEls = items.map((i) => (
+    <StoreItem key={i.id} id={i.id} energy={i.energy} />
+  ));
   return (
     <div className={styles.store}>
       <div className={styles.storeHeader}>Store</div>
@@ -296,6 +384,7 @@ export function Hand() {
       id={c.id}
       type={c.type}
       name={c.name || c.type}
+      location="hand"
       colour={c.colour}
       energy={c.energy}
       charges={c.charges}

@@ -23,6 +23,10 @@ export function drawCards() {
   socket.emit("draw");
 }
 
+export function giveCard(cardId, toPlayerId) {
+  socket.emit("give", cardId, toPlayerId);
+}
+
 export function flipCard(cardId) {
   socket.emit("flip", cardId);
 }

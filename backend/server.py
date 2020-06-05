@@ -290,7 +290,21 @@ def store_card(player_id, card_id):
 
 @atomic_state_change
 def give_card(player_id, card_id, to_player_id):
-    pass
+    loc_type, loc, card = _find_card_loc(player_id, card_id)
+
+    assert loc_type != 'hand', 'Cannot give card from hand'
+
+    _remove_card_from_loc(player_id, loc_type, loc, card)
+
+    to_player_board = game_state['boards'][to_player_id]
+    # Enhancers should go straight to other players' store when not giving as part of a set
+    if loc_type == 'store' or card['type'] == 'enhancer':
+        to_player_board['store'].append(card)
+    else:
+        to_player_board['sets'].append(_create_set_from_card(card))
+
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} gave {card["name"]} to {_get_player_name(to_player_id)}')
 
 
 @socketio.on('register')
