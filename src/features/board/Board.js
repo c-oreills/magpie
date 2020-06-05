@@ -98,16 +98,14 @@ function Card({
   charges,
   matchingSets,
   numMembers,
+  lightText,
 }) {
-  // TODO: handle different colours
-  colour = "cornflowerblue";
-
   const placeSetEls =
     matchingSets &&
     cardIsPlaceable(type) &&
     matchingSets.map((s) => (
       <Button key={s.id} onClick={() => placeCard(id, s.id)}>
-        Place in {s.members[0].name}
+        Place with {s.members[0].name}
       </Button>
     ));
 
@@ -141,7 +139,7 @@ function Card({
       <div className={styles.card} style={{ backgroundColor: colour }}>
         <div className={styles.cardHeader}>
           <div className={styles.energy}>{energy}</div>
-          {name}
+          <span className={lightText && styles.lightText}>{name}</span>
         </div>
         {charges && (
           <div className={styles.cardBody}>
@@ -191,6 +189,7 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
       sets={m.sets}
       matchingSets={findMatchingSets(m)}
       numMembers={members.length}
+      lightText={m.lightText}
     />
   ));
   let enhancerEls = enhancers.map((e) => (
@@ -277,19 +276,17 @@ export function Hand() {
 
   const findMatchingSets = makeFindMatchingSets(playerBoard);
 
-  // TODO: handle different colours
-  let colour = "cornflowerblue";
-
   let handEls = hand.map((c) => (
     <Card
       key={c.id}
       id={c.id}
       type={c.type}
       name={c.name || c.type}
-      colour={colour}
+      colour={c.colour}
       energy={c.energy}
       charges={c.charges}
       matchingSets={findMatchingSets(c)}
+      lightText={c.lightText}
     />
   ));
   return <div className={styles.hand}>{handEls}</div>;

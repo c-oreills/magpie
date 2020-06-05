@@ -2,53 +2,79 @@
   "sets": [{
     "id": "s_a",
     "charges": [1, 2],
+    "colour": "pink",
     "energy": 1,
-    "enhanceable": true
+    "enhanceable": true,
+    "names": ["Wren", "Longtailed tit"]
   }, {
     "id": "s_b",
     "charges": [1, 2, 3],
+    "colour": "yellow",
     "energy": 1,
-    "enhanceable": true
+    "enhanceable": true,
+    "names": ["Sparrow", "Robin", "Blue tit"]
   }, {
     "id": "s_c",
     "charges": [1, 2, 4],
+    "colour": "green",
     "energy": 2,
-    "enhanceable": true
+    "enhanceable": true,
+    "lightText": true,
+    "names": ["Chaffinch", "Woodpecker", "Goldfinch"]
   }, {
     "id": "s_d",
     "charges": [1, 3, 5],
+    "colour": "red",
     "energy": 2,
-    "enhanceable": true
+    "enhanceable": true,
+    "lightText": true,
+    "names": ["Blackbird", "Jay", "Raven"]
   }, {
     "id": "s_e",
     "charges": [2, 3, 6],
+    "colour": "purple",
     "energy": 3,
-    "enhanceable": true
+    "enhanceable": true,
+    "lightText": true,
+    "names": ["Swift", "Swallow", "Starling"]
   }, {
     "id": "s_f",
     "charges": [2, 4, 6],
+    "colour": "blue",
     "energy": 3,
-    "enhanceable": true
+    "enhanceable": true,
+    "lightText": true,
+    "names": ["Mallard", "Swan", "Brent Goose"]
   }, {
     "id": "s_g",
     "charges": [2, 4, 7],
+    "colour": "orange",
     "energy": 4,
-    "enhanceable": true
+    "enhanceable": true,
+    "names": ["Heron", "Kingfisher", "Kestrel"]
   }, {
     "id": "s_h",
     "charges": [3, 8],
+    "colour": "navy",
     "energy": 4,
-    "enhanceable": true
+    "enhanceable": true,
+    "lightText": true,
+    "names": ["Barn Owl", "Tawny Owl"]
   }, {
     "id": "s_y",
     "charges": [1, 2],
+    "colour": "white",
     "energy": 2,
-    "enhanceable": false
+    "enhanceable": false,
+    "names": ["Butterfly", "Dragonfly"]
   }, {
     "id": "s_z",
     "charges": [1, 2, 3, 4],
+    "colour": "brown",
     "energy": 2,
-    "enhanceable": false
+    "enhanceable": false,
+    "lightText": true,
+    "names": ["Fox", "Hedgehog", "Badger", "Rabbit"]
   }],
   "cards": [
     {

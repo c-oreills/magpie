@@ -118,3 +118,7 @@
   display: block;
   margin: 0.25em auto;
 }
+
+.lightText {
+  color: white;
+}

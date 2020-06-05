@@ -92,10 +92,9 @@ def init_game_state(num_players):
     deck = []
     for s in sets:
         c = dict(s, **{'type': 'member', 'sets': [s['id']]})
-        for n in range(len(s['charges'])):
+        for n, name in enumerate(s['names']):
             card = _clone_with_id(c, n)
-            # TODO: add proper names
-            card['name'] = card['id']
+            card['name'] = name
             deck.append(card)
 
     for c in cards:
@@ -103,7 +102,7 @@ def init_game_state(num_players):
         for n in range(count):
             card = _clone_with_id(c, n)
             # TODO: add proper names
-            card['name'] = card['id']
+            card.setdefault('name', card['id'])
 
             if card['type'] == 'wild':
                 first_set, = [s for s in sets if s['id'] == card['sets'][0]]
