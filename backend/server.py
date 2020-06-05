@@ -159,7 +159,6 @@ def init_game_state(players):
 
     shuffle(deck)
 
-    # TODO: support dynamic player list
     boards = {n: {'sets': [], 'store': []} for n in range(len(players))}
     hands = {n: [deck.pop() for _ in range(5)] for n in range(len(players))}
 
