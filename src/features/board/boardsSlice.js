@@ -35,7 +35,6 @@ export const handReducer = handSlice.reducer;
 export const gameSlice = createSlice({
   name: "game",
   initialState: {
-    // TODO: select my player by default
     activePlayerTab: 0,
     log: [],
     players: [],
