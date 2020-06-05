@@ -144,15 +144,6 @@ def game_state_for_player(player_id):
     return gs
 
 
-def _remove_card_from_hand(player_id, card_id):
-    hand = game_state['hands'][player_id]
-    cards = [c for c in hand if c['id'] == card_id]
-    assert cards, 'Card not in hand'
-    card, = cards
-    hand.remove(card)
-    return card
-
-
 def _find_card_loc(player_id, card_id):
     sets = game_state['boards'][player_id]['sets']
     hand = game_state['hands'][player_id]
