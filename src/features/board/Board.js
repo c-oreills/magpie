@@ -83,8 +83,8 @@ function cardIsSuperwild(type, colours) {
   return type === "wild" && colours.length > 2;
 }
 
-function cardIsNotOnlySetMember(numMembers) {
-  return !(numMembers === 1);
+function cardIsOnlySetMember(numMembers) {
+  return numMembers === 1;
 }
 
 function cardIsStorable(type) {
@@ -97,7 +97,7 @@ function cardIsPlaceable(type) {
 
 function cardIsPlaceableInNew(type, numMembers) {
   // TODO: handle disabling placement of superwild in new sets
-  return cardIsPlaceable(type) && cardIsNotOnlySetMember(numMembers);
+  return cardIsPlaceable(type) && !cardIsOnlySetMember(numMembers);
 }
 
 function cardIsPlayable(type) {
@@ -107,7 +107,7 @@ function cardIsPlayable(type) {
 function cardIsFlippable(type, numMembers, colours) {
   return (
     type === "wild" &&
-    cardIsNotOnlySetMember(numMembers) &&
+    cardIsOnlySetMember(numMembers) &&
     !cardIsSuperwild(type, colours)
   );
 }
