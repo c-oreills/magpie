@@ -135,9 +135,6 @@ def init_game_state(players):
         count = c.pop('count', 1)
         for n in range(count):
             card = _clone_with_id(c, n)
-            # TODO: add proper names
-            card.setdefault('name', card['id'])
-
             if card['type'] == 'wild':
                 card['name'] = 'Wild Bird'
                 card['colours'] = [
