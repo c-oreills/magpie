@@ -244,8 +244,9 @@ def flip_card(player_id, card_id):
 
     _flip_card(card)
 
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} flipped {card["name"]}')
+    if loc_type != 'hand':
+        game_state['log'].append(
+            f'{_get_player_name(player_id)} flipped {card["name"]}')
 
 
 @atomic_state_change
