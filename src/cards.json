@@ -44,7 +44,7 @@
     "energy": 3,
     "enhanceable": true,
     "lightText": true,
-    "names": ["Mallard", "Swan", "Brent Goose"]
+    "names": ["Mallard", "Swan", "Goose"]
   }, {
     "id": "s_g",
     "charges": [2, 4, 7],
@@ -200,19 +200,19 @@
     }, {
       "id": "c_asm",
       "type": "steal_member",
-      "name": "Talon Snatch",
+      "name": "Swoop",
       "count": 3,
       "energy": 3
     }, {
       "id": "c_as",
       "type": "swap",
-      "name": "Cuckoo's Child",
+      "name": "Cuckoo",
       "count": 3,
       "energy": 3
     }, {
       "id": "c_adc",
       "type": "double_charge",
-      "name": "Double Food",
+      "name": "2x Feed",
       "count": 2,
       "energy": 1
     }, {
