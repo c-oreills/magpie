@@ -266,6 +266,10 @@ def draw_cards(player_id):
 @atomic_state_change
 @only_on_turn
 def end_turn(player_id):
+    hand = game_state['hands'][player_id]
+    if len(hand) > 7:
+        raise UserVisibleError('Discard hand down to 7 cards')
+
     game_state['playerTurn'] += 1
     game_state['playerTurn'] %= len(game_state['players'])
     game_state['log'].append(
