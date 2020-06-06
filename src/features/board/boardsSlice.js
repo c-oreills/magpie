@@ -31,15 +31,11 @@ export const handReducer = handSlice.reducer;
 export const gameSlice = createSlice({
   name: "game",
   initialState: {
-    activePlayerTab: 0,
     log: [],
     players: [],
     playerId: null,
   },
   reducers: {
-    updateActivePlayerTab: (state, action) => {
-      state.activePlayerTab = action.payload;
-    },
     updateAlert: (state, action) => {
       state.alert = action.payload;
     },
@@ -57,7 +53,6 @@ export const gameSlice = createSlice({
 
 export const {
   updateAlert,
-  updateActivePlayerTab,
   updateLog,
   updatePlayers,
   updatePlayerId,

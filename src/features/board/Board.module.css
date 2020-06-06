@@ -5,9 +5,13 @@
   align-items: flex-start;
 }
 
-.board {
+.boardWrapper {
+  text-align: left;
   border: 1px solid #dee2e6;
-  border-top: none;
+}
+
+.ownBoard {
+  background-color: cornflowerblue;
 }
 
 .hand {
@@ -142,6 +146,7 @@
 }
 
 .storeHeader {
+  display: none;
   width: 100%;
   font-weight: bold;
 }
@@ -158,4 +163,9 @@
 
 .lightText {
   color: white;
+}
+
+.playerName {
+  margin-bottom: -0.5em;
+  margin-left: 0.5em;
 }

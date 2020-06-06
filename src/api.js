@@ -2,7 +2,6 @@ import io from "socket.io-client";
 
 import store from "./app/store";
 import {
-  updateActivePlayerTab,
   updateAlert,
   updateBoards,
   updateHand,
@@ -19,7 +18,6 @@ function socketConnect(e) {
   if (pid) {
     socket.emit("register", Number(pid));
     store.dispatch(updatePlayerId(pid));
-    store.dispatch(updateActivePlayerTab(pid));
   }
 }
 

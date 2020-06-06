@@ -396,11 +396,9 @@ function makeFindMatchingSets(board) {
   };
 }
 
-export function Board({ displayOwn }) {
+export function Board({ player, playerId }) {
   let game = useSelector(selectGame);
-  let board = useSelector(
-    selectBoard(displayOwn ? game.playerId : game.activePlayerTab)
-  );
+  let board = useSelector(selectBoard(playerId));
   let ownBoard = useSelector(selectBoard(game.playerId));
   if (!board) {
     return null;
@@ -430,7 +428,16 @@ export function Board({ displayOwn }) {
   ));
   boardEls.push(<Store key={"store"} items={board.store} />);
 
-  return <div className={styles.board}>{boardEls}</div>;
+  return (
+    <div
+      className={`${styles.boardWrapper} ${
+        playerId === game.playerId && styles.ownBoard
+      }`}
+    >
+      <div className={styles.playerName}>{player}</div>
+      <div className={styles.board}>{boardEls}</div>
+    </div>
+  );
 }
 
 export function Hand() {
@@ -455,4 +462,11 @@ export function Hand() {
     />
   ));
   return <div className={styles.hand}>{handEls}</div>;
+}
+
+export function Boards() {
+  let game = useSelector(selectGame);
+
+  let boardEls = game.players.map((p, i) => <Board player={p} playerId={i} />);
+  return boardEls;
 }

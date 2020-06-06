@@ -3,18 +3,11 @@ import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
-import Toast from "react-bootstrap/Toast";
-import { useDispatch, useSelector, useState } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { drawCards, endTurn, restartGame } from "../../api.js";
 
-import {
-  selectGame,
-  updateAlert,
-  updateActivePlayerTab,
-} from "../board/boardsSlice";
+import { selectGame, updateAlert } from "../board/boardsSlice";
 
 import styles from "./Controls.module.css";
 
@@ -28,24 +21,6 @@ export function ActionBar() {
         Done
       </Button>
     </div>
-  );
-}
-
-export function SelectorBar() {
-  let dispatch = useDispatch();
-  let game = useSelector(selectGame);
-
-  let playerEls = game.players.map((p, i) => (
-    <Tab key={i} eventKey={i} title={i === game.playerId ? "You" : p} />
-  ));
-
-  return (
-    <Tabs
-      activeKey={game.activePlayerTab}
-      onSelect={(k) => dispatch(updateActivePlayerTab(k))}
-    >
-      {playerEls}
-    </Tabs>
   );
 }
 
