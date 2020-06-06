@@ -73,8 +73,13 @@
   background-color: white;
 }
 
+.cardHeader:not(:last-child) {
+  border-bottom: 1px solid grey;
+}
+
 .cardBody {
   clear: both;
+  text-align: center;
 }
 
 .altColours {
@@ -125,7 +130,6 @@
   /* Drop all but left border */
   border: none;
   border-left: 1px solid grey;
-  border-bottom: 1px solid grey;
 }
 
 .charges {

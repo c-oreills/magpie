@@ -81,6 +81,19 @@ var hand = [
   { name: "Item", colour: "cornflowerblue", energy: 4 },
 ];
 
+const descriptions = {
+  enhance_primary: "Add to Flock",
+  enhance_secondary: "Add to Nest",
+  steal_member: "Steal a Bird",
+  steal_set: "Steal a Flock",
+  swap: "Swap 2 Birds",
+  charge_all: "All give 2",
+  charge_single: "One gives 5",
+  negate: "Cancel action",
+  double_charge: "Feed twice",
+  draw: "Draw 2 cards",
+};
+
 function cardIsSuperwild(type, colours) {
   return type === "wild" && colours.length > 2;
 }
@@ -241,7 +254,6 @@ function Card({
   );
 
   const headerStyle = colours ? { backgroundColor: colours[0] } : {};
-
   const altColourEls =
     colours &&
     colours.slice(1).map((c) => (
@@ -249,6 +261,7 @@ function Card({
         <br />
       </div>
     ));
+  const description = descriptions[type];
 
   return (
     <OverlayTrigger
@@ -270,6 +283,7 @@ function Card({
             <Charges charges={charges} numMembers={numMembers} />
           </div>
         )}
+        {description && location != "set" && <div className={styles.cardBody}>{description}</div>}
       </div>
     </OverlayTrigger>
   );
