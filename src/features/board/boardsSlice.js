@@ -2,11 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const boardsSlice = createSlice({
   name: "boards",
-  initialState: {
-    // TODO: handle configurable number of players
-    0: { sets: [], store: [] },
-    1: { sets: [], store: [] },
-  },
+  initialState: {},
   reducers: {
     updateBoards: (state, action) => {
       return action.payload;

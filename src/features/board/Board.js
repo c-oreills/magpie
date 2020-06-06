@@ -362,7 +362,9 @@ function setIsComplete(set) {
 
 function makeFindMatchingSets(board) {
   return function findMatchingSets(card) {
-    if (card.sets) {
+    if (!board) {
+      return [];
+    } else if (card.sets) {
       return board.sets.filter(
         (s) => card.sets.includes(s.set) && !s.members.includes(card)
       );
