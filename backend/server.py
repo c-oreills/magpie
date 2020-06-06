@@ -404,8 +404,7 @@ def discard_card(player_id, card_id):
     _remove_card_from_loc(player_id, loc_type, loc, card)
 
     game_state['log'].append(
-        f'{_get_player_name(player_id)} discarded {card["name"]}'
-    )
+        f'{_get_player_name(player_id)} discarded {card["name"]}')
 
 
 @atomic_state_change
@@ -487,6 +486,7 @@ def handle_give_card(card_id, to_player_id):
     player_id = sids_to_players[request.sid]
     give_card(player_id, card_id, to_player_id)
     broadcast_state_to_players()
+
 
 @socketio.on('give_set')
 def handle_give_set(card_id, to_player_id):
