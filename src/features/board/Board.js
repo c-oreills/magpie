@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import {
   flipCard,
   giveCard,
+  giveSet,
   placeCard,
   playCard,
   storeCard,
@@ -125,6 +126,10 @@ function cardIsGivable(location) {
   return location !== "hand";
 }
 
+function cardSetIsGivable(location) {
+  return location !== "hand";
+}
+
 function CardActionPopoverContent({
   id,
   type,
@@ -133,9 +138,9 @@ function CardActionPopoverContent({
   numMembers,
   colours,
 }) {
-  const [isGiving, setIsGiving] = useState(false);
-  if (isGiving) {
-    return <CardGivePopoverContent id={id} />;
+  const [givingType, setGivingType] = useState(null);
+  if (givingType) {
+    return <CardGivePopoverContent id={id} givingType={givingType} />;
   }
 
   const placeSetEls =
@@ -163,18 +168,28 @@ function CardActionPopoverContent({
         <Button onClick={() => storeCard(id)}>Store</Button>
       )}
       {cardIsGivable(location) && (
-        <Button onClick={() => setIsGiving(true)}>Give...</Button>
+        <Button onClick={() => setGivingType("card")}>Give...</Button>
+      )}
+      {cardSetIsGivable(location) && (
+        <Button onClick={() => setGivingType("set")}>Give flock...</Button>
       )}
     </Popover.Content>
   );
 }
 
-function CardGivePopoverContent({ id }) {
+function CardGivePopoverContent({ id, givingType }) {
   const { players, playerId } = useSelector(selectGame);
+
+  let giveFn;
+  if (givingType === "card") {
+    giveFn = giveCard;
+  } else {
+    giveFn = giveSet;
+  }
 
   let playerEls = players
     .map((p, pId) => (
-      <Button key={pId} onClick={() => giveCard(id, pId)}>
+      <Button key={pId} onClick={() => giveFn(id, pId)}>
         {p}
       </Button>
     ))
@@ -182,7 +197,7 @@ function CardGivePopoverContent({ id }) {
 
   return (
     <Popover.Content className={styles.actionPopover}>
-      Give to...
+      Give {givingType === "set" && "flock "}to...
       {playerEls}
     </Popover.Content>
   );

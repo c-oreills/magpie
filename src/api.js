@@ -43,7 +43,11 @@ export function endTurn() {
 }
 
 export function giveCard(cardId, toPlayerId) {
-  socket.emit("give", cardId, toPlayerId);
+  socket.emit("give_card", cardId, toPlayerId);
+}
+
+export function giveSet(cardId, toPlayerId) {
+  socket.emit("give_set", cardId, toPlayerId);
 }
 
 export function flipCard(cardId) {

@@ -369,6 +369,23 @@ def give_card(player_id, card_id, to_player_id):
 
 
 @atomic_state_change
+def give_card_set(player_id, card_id, to_player_id):
+    loc_type, loc, card = _find_card_loc(player_id, card_id)
+
+    assert loc_type != 'hand', 'Cannot give card from hand'
+
+    from_player_board = game_state['boards'][player_id]
+    from_player_board['sets'].remove(loc)
+
+    to_player_board = game_state['boards'][to_player_id]
+    to_player_board['sets'].append(loc)
+
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} gave set containing {card["name"]} to {_get_player_name(to_player_id)}'
+    )
+
+
+@atomic_state_change
 def restart_game(player_id):
     if player_id != 0:
         raise UserVisibleError("Only first player can restart game")
@@ -442,10 +459,16 @@ def handle_store(card_id):
     broadcast_state_to_players()
 
 
-@socketio.on('give')
+@socketio.on('give_card')
 def handle_give(card_id, to_player_id):
     player_id = sids_to_players[request.sid]
     give_card(player_id, card_id, to_player_id)
+    broadcast_state_to_players()
+
+@socketio.on('give_set')
+def handle_give(card_id, to_player_id):
+    player_id = sids_to_players[request.sid]
+    give_card_set(player_id, card_id, to_player_id)
     broadcast_state_to_players()
 
 
