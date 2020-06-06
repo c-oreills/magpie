@@ -307,10 +307,6 @@ def flip_card(player_id, card_id):
 
     _flip_card(card)
 
-    if loc_type != 'hand':
-        game_state['log'].append(
-            f'{_get_player_name(player_id)} flipped {card["name"]}')
-
 
 @atomic_state_change
 def play_card(player_id, card_id):
@@ -344,8 +340,11 @@ def place_card(player_id, card_id, set_id):
             set_['enhancers'].append(card)
         else:
             set_['members'].append(card)
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} placed {card["name"]}')
+
+    # Don't log moves around board
+    if loc_type != 'set':
+        game_state['log'].append(
+            f'{_get_player_name(player_id)} placed {card["name"]}')
 
 
 @atomic_state_change
