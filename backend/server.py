@@ -239,6 +239,16 @@ def _remove_card_from_loc(player_id, loc_type, loc, card):
         game_state['boards'][player_id]['sets'].remove(loc)
 
 
+def _redeal_discard_pile():
+    assert not game_state['deck'], 'Deck must be empty'
+
+    shuffle(game_state['discard'])
+    game_state['deck'].extend(game_state['discard'])
+    game_state['discard'].clear()
+
+    game_state['log'].append(f'Ran out of cards - reshuffling discard pile')
+
+
 def _get_player_name(player_id):
     return game_state['players'][player_id]
 
@@ -248,17 +258,13 @@ def _get_player_name(player_id):
 def draw_cards(player_id):
     deck = game_state['deck']
     hand = game_state['hands'][player_id]
+    num_cards = 2 if hand else 5
 
-    if hand:
-        num_cards = 2
-    else:
-        num_cards = 5
+    for _ in range(num_cards):
+        if not deck:
+            _redeal_discard_pile()
+        hand.append(deck.pop())
 
-    # TODO handle rerack from discard pile
-    assert len(deck) >= num_cards, 'Exhausted deck'
-
-    drawn_cards, game_state['deck'] = deck[:num_cards], deck[num_cards:]
-    game_state['hands'][player_id].extend(drawn_cards)
     game_state['log'].append(
         f'{_get_player_name(player_id)} drew {num_cards} cards')
 
