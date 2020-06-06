@@ -380,15 +380,17 @@ function makeFindMatchingSets(board) {
   };
 }
 
-export function Board() {
+export function Board({ displayOwn }) {
   let game = useSelector(selectGame);
-  let board = useSelector(selectBoard(game.activePlayerTab));
-  let playerBoard = useSelector(selectBoard(game.playerId));
+  let board = useSelector(
+    selectBoard(displayOwn ? game.playerId : game.activePlayerTab)
+  );
+  let ownBoard = useSelector(selectBoard(game.playerId));
   if (!board) {
     return null;
   }
 
-  const findMatchingSets = makeFindMatchingSets(playerBoard);
+  const findMatchingSets = makeFindMatchingSets(ownBoard);
 
   function setCompareFn(a, b) {
     let lengthDiff = setLength(b) - setLength(a);

@@ -16,6 +16,7 @@ function App() {
       <SettingMenu />
       <SelectorBar />
       <Board />
+      <Board displayOwn={true} />
       <Hand />
       <ActionBar />
       <Log />
