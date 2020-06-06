@@ -87,6 +87,7 @@ export function AlertBox() {
   }
   return (
     <Alert
+      className={styles.alert}
       variant="danger"
       onClose={() => dispatch(updateAlert(null))}
       dismissible

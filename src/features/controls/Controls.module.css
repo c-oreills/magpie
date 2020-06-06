@@ -17,3 +17,11 @@
   position: absolute;
   right: 0;
 }
+
+.alert {
+  position: fixed;
+  /* Constrain by max-width but grow as much as possible */
+  max-width: calc(768px - 1em);
+  width: calc(100% - 1em);
+  z-index: 1;
+}
