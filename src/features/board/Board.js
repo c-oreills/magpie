@@ -115,7 +115,8 @@ function cardIsPlayable(type) {
 function cardIsFlippable(type, numMembers, colours) {
   return (
     type === "wild" &&
-    cardIsOnlySetMember(numMembers) &&
+    // numMembers is undefined in hand, allow flipping here
+    (cardIsOnlySetMember(numMembers) || typeof numMembers === "undefined") &&
     !cardIsSuperwild(type, colours)
   );
 }
