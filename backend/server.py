@@ -137,6 +137,8 @@ def init_game_state(players):
             card = _clone_with_id(c, n)
             if card['type'] == 'wild':
                 card['name'] = 'Wild Bird'
+                # Copy list so it's editable independantly
+                card['sets'] = list(card['sets'])
                 card['colours'] = [
                     s['colour'] for s in sets if s['id'] in card['sets']
                 ]
