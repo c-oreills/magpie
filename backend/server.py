@@ -460,13 +460,13 @@ def handle_store(card_id):
 
 
 @socketio.on('give_card')
-def handle_give(card_id, to_player_id):
+def handle_give_card(card_id, to_player_id):
     player_id = sids_to_players[request.sid]
     give_card(player_id, card_id, to_player_id)
     broadcast_state_to_players()
 
 @socketio.on('give_set')
-def handle_give(card_id, to_player_id):
+def handle_give_set(card_id, to_player_id):
     player_id = sids_to_players[request.sid]
     give_card_set(player_id, card_id, to_player_id)
     broadcast_state_to_players()

@@ -328,7 +328,7 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
 function StoreItem({ id, energy }) {
   const popover = (
     <Popover>
-      <CardGivePopoverContent id={id} />
+      <CardGivePopoverContent id={id} givingType="card" />
     </Popover>
   );
   return (
