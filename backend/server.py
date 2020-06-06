@@ -386,6 +386,19 @@ def give_card_set(player_id, card_id, to_player_id):
 
 
 @atomic_state_change
+def discard_card(player_id, card_id):
+    loc_type, loc, card = _find_card_loc(player_id, card_id)
+
+    assert loc_type == 'hand', 'Can only discard from hand'
+
+    _remove_card_from_loc(player_id, loc_type, loc, card)
+
+    game_state['log'].append(
+        f'{_get_player_name(player_id)} discarded {card["name"]}'
+    )
+
+
+@atomic_state_change
 def restart_game(player_id):
     if player_id != 0:
         raise UserVisibleError("Only first player can restart game")
@@ -469,6 +482,13 @@ def handle_give_card(card_id, to_player_id):
 def handle_give_set(card_id, to_player_id):
     player_id = sids_to_players[request.sid]
     give_card_set(player_id, card_id, to_player_id)
+    broadcast_state_to_players()
+
+
+@socketio.on('discard')
+def handle_discard(card_id):
+    player_id = sids_to_players[request.sid]
+    discard_card(player_id, card_id)
     broadcast_state_to_players()
 
 

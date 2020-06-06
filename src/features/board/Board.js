@@ -5,6 +5,7 @@ import Popover from "react-bootstrap/Popover";
 import { useSelector } from "react-redux";
 
 import {
+  discardCard,
   flipCard,
   giveCard,
   giveSet,
@@ -122,6 +123,10 @@ function cardIsFlippable(type, numMembers, colours) {
   );
 }
 
+function cardIsDiscardable(location, handIsOverfull) {
+  return location === "hand" && handIsOverfull;
+}
+
 function cardIsGivable(location) {
   return location !== "hand";
 }
@@ -137,6 +142,7 @@ function CardActionPopoverContent({
   matchingSets,
   numMembers,
   colours,
+  handIsOverfull,
 }) {
   const [givingType, setGivingType] = useState(null);
   if (givingType) {
@@ -172,6 +178,9 @@ function CardActionPopoverContent({
       )}
       {cardSetIsGivable(location) && (
         <Button onClick={() => setGivingType("set")}>Give flock...</Button>
+      )}
+      {cardIsDiscardable(location, handIsOverfull) && (
+        <Button onClick={() => discardCard(id)}>Discard</Button>
       )}
     </Popover.Content>
   );
@@ -214,6 +223,7 @@ function Card({
   matchingSets,
   numMembers,
   lightText,
+  handIsOverfull,
 }) {
   // Default background to white
   const popover = (
@@ -225,6 +235,7 @@ function Card({
         matchingSets={matchingSets}
         numMembers={numMembers}
         colours={colours}
+        handIsOverfull={handIsOverfull}
       />
     </Popover>
   );
@@ -446,6 +457,7 @@ export function Hand() {
   let playerBoard = useSelector(selectBoard(game.playerId));
 
   const findMatchingSets = makeFindMatchingSets(playerBoard);
+  const handIsOverfull = hand.length > 7;
 
   let handEls = hand.map((c) => (
     <Card
@@ -459,6 +471,7 @@ export function Hand() {
       charges={c.charges}
       matchingSets={findMatchingSets(c)}
       lightText={c.lightText}
+      handIsOverfull={handIsOverfull}
     />
   ));
   return <div className={styles.hand}>{handEls}</div>;

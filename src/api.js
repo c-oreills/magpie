@@ -32,6 +32,10 @@ function socketAlert(m) {
   store.dispatch(updateAlert(m));
 }
 
+export function discardCard(cardId) {
+  socket.emit("discard", cardId);
+}
+
 export function drawCards() {
   socket.emit("draw");
 }
