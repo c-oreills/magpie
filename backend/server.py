@@ -74,7 +74,9 @@ def only_on_turn(fn):
 
 
 def broadcast_state_to_players():
-    for sid, player_id in sids_to_players.items():
+    # Explicitly listifying stops concurrency errors where dict changes size
+    # during iteration
+    for sid, player_id in list(sids_to_players.items()):
         socketio.emit('server_state_update',
                       game_state_for_player(player_id),
                       room=sid)
