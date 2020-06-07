@@ -430,13 +430,12 @@ export function Hand() {
       key={c.id}
       id={c.id}
       type={c.type}
-      name={c.name || c.type}
+      name={c.name}
       location="hand"
       sets={c.sets}
       energy={c.energy}
       charges={c.charges}
       matchingSets={findMatchingSets(c)}
-      lightText={c.lightText}
       handIsOverfull={handIsOverfull}
     />
   ));
