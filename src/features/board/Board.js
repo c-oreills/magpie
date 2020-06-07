@@ -29,8 +29,13 @@ const descriptions = {
   draw: "Draw 2 cards",
 };
 
-function cardIsSuperwild(type, colours) {
-  return type === "wild" && colours.length > 2;
+function setNameToCSSClass(setName) {
+  const letter = setName.slice(-1);
+  return `set${letter.toUpperCase()}`;
+}
+
+function cardIsSuperwild(type, sets) {
+  return type === "wild" && sets.length > 2;
 }
 
 function cardIsMember(type) {
@@ -62,12 +67,12 @@ function cardIsPlayable(type) {
   return type !== "energy" && !cardIsPlaceable(type);
 }
 
-function cardIsFlippable(type, numMembers, colours) {
+function cardIsFlippable(type, numMembers, sets) {
   return (
     type === "wild" &&
     // numMembers is undefined in hand, allow flipping here
     (cardIsOnlySetMember(numMembers) || typeof numMembers === "undefined") &&
-    !cardIsSuperwild(type, colours)
+    !cardIsSuperwild(type, sets)
   );
 }
 
@@ -89,7 +94,7 @@ function CardActionPopoverContent({
   location,
   matchingSets,
   numMembers,
-  colours,
+  sets,
   handIsOverfull,
 }) {
   const [givingType, setGivingType] = useState(null);
@@ -112,7 +117,7 @@ function CardActionPopoverContent({
         <Button onClick={() => placeCard(id)}>Place in New</Button>
       )}
       {placeSetEls}
-      {cardIsFlippable(type, numMembers, colours) && (
+      {cardIsFlippable(type, numMembers, sets) && (
         <Button onClick={() => flipCard(id)}>Flip</Button>
       )}
       {cardIsPlayable(type) && (
@@ -165,7 +170,7 @@ function Card({
   type,
   name,
   location,
-  colours,
+  sets,
   energy,
   charges,
   matchingSets,
@@ -182,20 +187,32 @@ function Card({
         location={location}
         matchingSets={matchingSets}
         numMembers={numMembers}
-        colours={colours}
+        sets={sets}
         handIsOverfull={handIsOverfull}
       />
     </Popover>
   );
 
-  const headerStyle = colours ? { backgroundColor: colours[0] } : {};
-  const altColourEls =
-    colours &&
-    colours.slice(1).map((c) => (
-      <div key={c} className={styles.altColour} style={{ backgroundColor: c }}>
-        <br />
-      </div>
-    ));
+  let headerSetClass, altColourEls;
+  if (sets) {
+    let altColours;
+    if (type === "charge" || cardIsSuperwild(type, sets)) {
+      // For charges and superwildcards, display all colours in set with blank header
+      altColours = sets.map(setNameToCSSClass);
+    } else {
+      // For members and other wildcards, display header in first colour and
+      // single alt colour
+      headerSetClass = setNameToCSSClass(sets[0]);
+      altColours = sets.slice(1).map(setNameToCSSClass);
+    }
+    if (altColours && altColours.length > 0) {
+      altColourEls = altColours.map((ac) => (
+        <div key={ac} className={[styles.altColour, styles[ac]].join(" ")}>
+          <br />
+        </div>
+      ));
+    }
+  }
   const description = descriptions[type];
 
   return (
@@ -206,19 +223,21 @@ function Card({
       overlay={popover}
     >
       <div className={styles.card}>
-        <div className={styles.cardHeader} style={headerStyle}>
+        <div className={[styles.cardHeader, styles[headerSetClass]].join(" ")}>
           <Energy energy={energy} />
-          {altColourEls && altColourEls.length > 0 && (
+          {altColourEls && (
             <div className={styles.altColours}>{altColourEls}</div>
           )}
-          <span className={lightText && styles.lightText}>{name}</span>
+          <span>{name}</span>
         </div>
         {charges && (
           <div className={styles.cardBody}>
             <Charges charges={charges} numMembers={numMembers} />
           </div>
         )}
-        {description && location != "set" && <div className={styles.cardBody}>{description}</div>}
+        {description && location != "set" && (
+          <div className={styles.cardBody}>{description}</div>
+        )}
       </div>
     </OverlayTrigger>
   );
@@ -257,10 +276,9 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
       type={m.type}
       name={m.name}
       location="set"
-      colours={m.colours}
+      sets={m.sets}
       energy={m.energy}
       charges={charges}
-      sets={m.sets}
       matchingSets={findMatchingSets(m)}
       numMembers={members.length}
       lightText={m.lightText}
@@ -273,7 +291,6 @@ function Set({ members, charges, enhancers, findMatchingSets }) {
       type={e.type}
       name={e.name}
       location="set"
-      colours={e.colours}
       energy={e.energy}
     />
   ));
@@ -415,7 +432,7 @@ export function Hand() {
       type={c.type}
       name={c.name || c.type}
       location="hand"
-      colours={c.colours}
+      sets={c.sets}
       energy={c.energy}
       charges={c.charges}
       matchingSets={findMatchingSets(c)}

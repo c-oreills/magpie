@@ -124,11 +124,9 @@ def init_game_state(players):
     deck = []
     for s in sets:
         c = dict(s, **{'type': 'member', 'sets': [s['id']]})
-        colour = c.pop('colour')
         for n, name in enumerate(s['names']):
             card = _clone_with_id(c, n)
             card['name'] = name
-            card['colours'] = [colour]
             deck.append(card)
 
     for c in cards:
@@ -139,22 +137,13 @@ def init_game_state(players):
                 card['name'] = 'Wild'
                 # Copy list so it's editable independantly
                 card['sets'] = list(card['sets'])
-                card['colours'] = [
-                    s['colour'] for s in sets if s['id'] in card['sets']
-                ]
                 if len(card['sets']) == 2:
                     first_set, = [s for s in sets if s['id'] == card['sets'][0]]
                     alt_set, = [s for s in sets if s['id'] == card['sets'][1]]
                     card['charges'] = first_set['charges']
                     card['altCharges'] = alt_set['charges']
-                else:
-                    # Make header background white and display rest as alt colours
-                    card['colours'] = ['white'] + card['colours']
             elif card['type'] == 'charge':
                 card['name'] = 'Feed'
-                card['colours'] = ['white'] + [
-                    s['colour'] for s in sets if s['id'] in card['sets']
-                ]
             elif card['type'] == 'energy':
                 card['name'] = 'Seeds'
             deck.append(card)
@@ -291,7 +280,6 @@ def _flip_card(card, error_on_superwild=True):
             return
 
     card['charges'], card['altCharges'] = card['altCharges'], card['charges']
-    card['colours'].reverse()
     card['sets'].reverse()
 
 

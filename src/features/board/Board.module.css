@@ -165,11 +165,57 @@
   margin: 0.25em auto;
 }
 
-.lightText {
-  color: white;
-}
-
 .playerName {
   margin-bottom: -0.5em;
   margin-left: 0.5em;
+}
+
+.setA {
+  background-color: pink;
+  color: black;
+}
+
+.setB {
+  background-color: yellow;
+  color: black;
+}
+
+.setC {
+  background-color: green;
+  color: white;
+}
+
+.setD {
+  background-color: red;
+  color: white;
+}
+
+.setE {
+  background-color: purple;
+  color: white;
+}
+
+.setF {
+  background-color: blue;
+  color: white;
+}
+
+.setG {
+  background-color: orange;
+  color: white;
+}
+
+.setH {
+  background-color: navy;
+  color: white;
+}
+
+.setY {
+  background-color: grey;
+  color: white;
+}
+
+.setZ {
+  background-color: black;
+  color: white;
 }
