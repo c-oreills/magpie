@@ -165,7 +165,7 @@ function CardGivePopoverContent({ id, givingType }) {
   );
 }
 
-function Card({
+export function Card({
   id,
   type,
   name,

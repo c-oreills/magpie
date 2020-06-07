@@ -228,18 +228,22 @@ def _remove_card_from_loc(player_id, loc_type, loc, card):
         game_state['boards'][player_id]['sets'].remove(loc)
 
 
-def _redeal_discard_pile():
+def _redeal_discard_pile(player_id):
     assert not game_state['deck'], 'Deck must be empty'
 
     shuffle(game_state['discard'])
     game_state['deck'].extend(game_state['discard'])
     game_state['discard'].clear()
 
-    game_state['log'].append(f'Ran out of cards - reshuffling discard pile')
+    _log(player_id, 'redeal')
 
 
 def _get_player_name(player_id):
     return game_state['players'][player_id]
+
+
+def _log(player_id, action, *args):
+    game_state['log'].append((player_id, action, *args))
 
 
 @atomic_state_change
@@ -251,11 +255,10 @@ def draw_cards(player_id):
 
     for _ in range(num_cards):
         if not deck:
-            _redeal_discard_pile()
+            _redeal_discard_pile(player_id)
         hand.append(deck.pop())
 
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} drew {num_cards} cards')
+    _log(player_id, 'draw', num_cards)
 
 
 @atomic_state_change
@@ -267,9 +270,8 @@ def end_turn(player_id):
 
     game_state['playerTurn'] += 1
     game_state['playerTurn'] %= len(game_state['players'])
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} is done, now for {_get_player_name(game_state["playerTurn"])}'
-    )
+
+    _log(player_id, 'end_turn', game_state['playerTurn'])
 
 
 def _flip_card(card, error_on_superwild=True):
@@ -304,8 +306,8 @@ def play_card(player_id, card_id):
     assert loc_type == 'hand', "Card not in hand"
     _remove_card_from_loc(player_id, loc_type, loc, card)
     game_state['discard'].append(card)
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} played {card["name"]}')
+
+    _log(player_id, 'play', card)
 
 
 @atomic_state_change
@@ -331,8 +333,7 @@ def place_card(player_id, card_id, set_id):
 
     # Don't log moves around board
     if loc_type != 'set':
-        game_state['log'].append(
-            f'{_get_player_name(player_id)} placed {card["name"]}')
+        _log(player_id, 'place', card)
 
 
 @atomic_state_change
@@ -341,8 +342,8 @@ def store_card(player_id, card_id):
     loc_type, loc, card = _find_card_loc(player_id, card_id)
     _remove_card_from_loc(player_id, loc_type, loc, card)
     game_state['boards'][player_id]['store'].append(card)
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} stored {card["name"]}')
+
+    _log(player_id, 'store', card)
 
 
 @atomic_state_change
@@ -360,9 +361,7 @@ def give_card(player_id, card_id, to_player_id):
     else:
         to_player_board['sets'].append(_create_set_from_card(card))
 
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} gave {card["name"]} to {_get_player_name(to_player_id)}'
-    )
+    _log(player_id, 'give_card', card, to_player_id)
 
 
 @atomic_state_change
@@ -377,9 +376,7 @@ def give_card_set(player_id, card_id, to_player_id):
     to_player_board = game_state['boards'][to_player_id]
     to_player_board['sets'].append(loc)
 
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} gave set containing {card["name"]} to {_get_player_name(to_player_id)}'
-    )
+    _log(player_id, 'give_set', card, to_player_id)
 
 
 @atomic_state_change
@@ -390,8 +387,7 @@ def discard_card(player_id, card_id):
 
     _remove_card_from_loc(player_id, loc_type, loc, card)
 
-    game_state['log'].append(
-        f'{_get_player_name(player_id)} discarded {card["name"]}')
+    _log(player_id, 'discard', card)
 
 
 @atomic_state_change

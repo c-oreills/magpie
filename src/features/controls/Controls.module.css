@@ -13,6 +13,23 @@
   overflow: scroll;
 }
 
+.logItem {
+  margin: 0.25em 0;
+}
+
+.logItem > div {
+  display: inline-block;
+  margin: 0 0.5em;
+  width: 7em;
+  vertical-align: top;
+}
+
+@media (max-width: 576px) {
+  .logItem > div {
+    width: 30%;
+  }
+}
+
 .settings {
   position: absolute;
   right: 0;
