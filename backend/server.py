@@ -495,8 +495,8 @@ def handle_restart():
 
 
 if __name__ == '__main__':
-    if sys.argv[-1] == 'init':
-        init_game_state(['Christy', 'Abbie'])
+    if sys.argv[1] == 'init':
+        init_game_state(sys.argv[2:])
         dump_game_state()
     else:
         game_state = load_game_state()
