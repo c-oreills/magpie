@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 eventlet = "==0.25.1"
 Flask-SocketIO = "==4.2.1"
-Flask-Cors = "==3.0.8"
+Flask-Cors = "==3.0.9"
 
 [requires]
 python_version = "3.8"
